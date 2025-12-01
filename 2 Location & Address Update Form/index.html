@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Location & Address Update Form</title>
+        <!-- Style -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="site-header" role="banner">
+        <div class="header-inner">
+        <img src="charity_one_logo.png" alt="Charity One Logo" class="logo" onerror="this.style.display='none'"/>
+        </div>
+    </header>
+
+    <div class="divider-white" aria-hidden="true"></div>
+    <div class="divider-grey" aria-hidden="true"></div>
+
+    <div class="header-bottom">
+        <div class="subtitle"></div>
+    </div>
+
+    <!-- Form Title -->
+    <div class="form-title">
+        <h1 class="title" for="orgName">Location & Address Update Form</h1>
+    </div>
+
+<div class="container">
+  <form id="locForm" class="card">
+
+    <!-- Form Intro -->
+    <div>
+        <p class="intro">Please review the attached list of locations shown on your current policy while completing this form.</p>
+        <p class="intro">This form handles one location change at a time. If you have multiple location changes, please submit a separate form for each.</p>
+    </div>
+
+    <!-- 1 Org Name (required)-->
+    <div class="section">
+      <label class="section-title"><span class="q-number">1.</span> Organization Name <span class="required-star">*</span></label>
+      <input type="text" name="orgName" id="orgName" class="answer" type="text" required aria-required="true" placeholder="Legal or operating name" />
+    </div>
+
+    <!-- 2 Policy Number (required) -->
+    <div class="section">
+      <label class="section-title"><span class="q-number">2.</span> Policy Number <span class="required-star">*</span></label>
+      <input type="text" name="polNum" id="polNum" class="answer" type="text" required aria-required="true" placeholder="As shown on your declarations page" />
+    </div>
+
+    <!-- 3 Your Name (required) -->
+    <div class="section">
+      <label class="section-title"><span class="q-number">3.</span> Your Name <span class="required-star">*</span></label>
+      <input type="text" name="yourName" id="yourName" class="answer" type="text" required aria-required="true" placeholder="First and last name" />
+    </div>
+
+    <!-- 4 Your Role or Title (optional) -->
+    <div class="section">
+      <label class="section-title"><span class="q-number">4.</span> Your Role or Title</label>
+      <input type="text" name="role" id="role" class="answer" type="text" placeholder="Executive Director, Office Manager, Program Director" />
+    </div>
+
+    <!-- 5 Your Email (required) -->
+    <div class="section">
+      <label class="section-title"><span class="q-number">5.</span> Your Email <span class="required-star">*</span></label>
+      <input type="email" name="email" id="email" class="answer" type="text" required aria-required="true" placeholder="name@example.org" />
+    </div>
+
+    <!-- 6 Your Phone Number (required) -->
+    <div class="section">
+      <label class="section-title"><span class="q-number">6.</span> Your Phone Number</label>
+      <input type="text" name="phoneNumber" id="phoneNumber" class="answer" type="text" required aria-required="true" placeholder="Best number to reach you" />
+    </div>
+
+    <!-- 7 Type of Update -->
+    <div class="section">
+      <label class="section-title"><span class="q-number">7.</span> What type of change do you need to make? <span class="required-star">*</span></label>
+      <div class="choice-group" id="updateTypeGroup">
+        <label class="choice-item"><input type="radio" name="updateType" value="correct"> Correct an existing address</label>
+        <label class="choice-item"><input type="radio" name="updateType" value="sqft"> Update square footage or usage</label>
+        <label class="choice-item"><input type="radio" name="updateType" value="add"> Add a new location</label>
+        <label class="choice-item"><input type="radio" name="updateType" value="remove"> Remove a location</label>
+        <label class="choice-item"><input type="radio" name="updateType" value="other"> Other</label>
+      </div>
+      <input class="answer hidden" id="otherExplain" placeholder="Explain..." />
+    </div>
+
+    <!-- 8 Which Location (not required when the change type is "add new location")-->
+    <div class="section">
+      <label class="section-title"><span class="q-number">8.</span> Which location on your policy is being updated?</label>
+      <select class="answer" id="locationSelect" name="locationSelect">
+        <option value="">-- Select --</option>
+        <option value="loc1">Location 1</option>
+        <option value="loc2">Location 2</option>
+        <option value="new">Add a new location</option>
+      </select>
+      <input id="newLocationName" name="newLocationName" class="answer hidden" placeholder="New location name" />
+      <p class="intro">You may refer to the attached location list for the exact name or address.</p>
+    </div>
+
+    <!-- 9 Location ID -->
+    <div class="section">
+      <label class="section-title"><span class="q-number">9.</span> Location ID (if shown on your policy)</label>
+      <input type="text" name="locId" id="locId" class="answer" type="text" placeholder="Location or building number from your policy (if available)" />
+    </div>
+
+
+    <!-- 10 Correcting Address -->
+    <div class="section" id="addressSection"> 
+        <label class="section-title"><span class="q-number">10.</span> Enter the updated or corrected address</label>
+
+        <!-- Street Adress -->
+        <input type="text" name="strAdd" id="strAdd" class="answer" type="text" placeholder="Street Address" />
+        <!-- City -->
+        <input type="text" name="city" id="city" class="answer" type="text" placeholder="City" />
+        <!-- Street Adress -->
+        <input type="text" name="state" id="state" class="answer" type="text" placeholder="State" />
+        <!-- Street Adress -->
+        <input type="text" name="zipCode" id="zipCode" class="answer" type="text" placeholder="ZIP Code" />
+        <!-- Helper Text -->
+         <p class="intro">If the address is not changing, you may leave this section blank, unless you are adding a new location.</p>
+    </div>
+
+    <!-- 11 Building Details (if applicable) -->
+    <!--  Required when “Add a new location” is selected in Question 7-->
+    <div class="section" id="buildingDetailsSection">
+      <label class="section-title"><span class="q-number">11.</span> Building Details (if applicable)</label>
+      <textarea type="text" name="buildingDetails" id="buildingDetails" class="answer" placeholder="Office use, about 2,500 sq ft, built 1989, roof updated 2020"></textarea>
+    </div>
+
+    <!-- 12 Date the change should take effect (Required) -->
+    <div class="section">
+      <label class="section-title"><span class="q-number">12.</span> Date the change should take effect <span class="required-star">*</span></label>
+      <input type="date" required aria-required="true" class="answer" id="changeDate"/>
+    </div>
+
+    <!-- 13 Upload docs -->
+    <div class="section">
+      <label class="section-title"><span class="q-number">13.</span> Upload any supporting documents (optional)</label>
+      <input class="answer" type="file" multiple id="docsUpload" />
+      <p class="intro">Examples: lease, floor plan, photos, letters from landlord, or other documents related to this change</p>
+    </div>
+
+    <!-- 14 Additional Insured -->
+    <!-- If “Yes”: show Fields 15 and 16. -->
+    <!-- If “No”: skip to Field 17. -->
+    <div class="section" id="addInsured">
+      <label class="section-title"><span class="q-number">14.</span> Are you requesting an Additional Insured? <span class="required-star">*</span></label>
+      <div class="choice-group">
+        <label class="choice-item"><input type="radio" name="addIns" value="yes"> Yes</label>
+        <label class="choice-item"><input type="radio" name="addIns" value="no"> No</label>
+      </div>
+    </div>
+
+    <!-- 15 Additional Insured Information -->
+    <div class="section hidden" id="addInsInfoSection">
+      <label class="section-title"><span class="q-number">15.</span> Additional Insured Information</label>
+      <input type="text" name="insInfo" id="insInfo" class="answer" placeholder="Name of the entity to be added and their relationship to your organization" />
+      <p class="intro">Example values: City of Los Angeles, landlord</p>
+    </div>
+
+    <!-- 16 File Upload -->
+    <div class="section hidden" id="addInsFileSection">
+      <label class="section-title"><span class="q-number">16.</span> Upload the contract requiring the Additional Insured (recommended)</label>
+      <input class="answer" type="file" multiple id="fileUpload" />
+      <p class="intro">If available, please attach the contract or agreement that requires this Additional Insured.</p>
+    </div>
+
+    <!-- 17 Notes -->
+    <div class="section">
+      <label class="section-title"><span class="q-number">17.</span> Additional Notes</label>
+      <textarea placeholder="Anything else you would like us to know about this change" class="answer" id="notes"></textarea>
+    </div>
+
+    <!-- 18 Confirm -->
+    <div class="section">
+      <label class="section-title"><span class="q-number">18.</span> Confirmation <span class="required-star">*</span></label>
+      <label class="choice-item"><input type="checkbox" id="agree"> I confirm that the information provided is true and accurate.</label>
+    </div>
+
+    <!-- 19 Signature -->
+    <div class="section">
+      <label class="section-title"><span class="q-number">19.</span> Signature (Full Name) <span class="required-star">*</span></label>
+      <input placeholder="First and last name" class="answer" id="fullName" />
+      <p class="intro">By typing my name, I am signing this request electronically.
+</p>
+    </div>
+
+        <!-- Actions -->
+        <div class="actions">
+          <div class="muted-small">Fields marked <span class="required-star">*</span> are required</div>
+          <div style="display:flex;gap:10px;">
+            <button type="button" id="previewBtn" class="btn secondary small">Preview</button>
+            <button id="submitBtn" class="btn" type="submit">Submit</button>
+          </div>
+        </div>
+
+    <div id="statusMsg" class="message hidden"></div>
+  </form>
+
+     </div>
+
+
+   <!-- Preview Modal -->
+  <div id="previewModal" class="preview-modal hidden" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+    <div class="preview-dialog" role="document">
+      <header class="preview-header">
+        <h3 id="previewTitle">Review your answers</h3>
+        <button id="closePreview" class="preview-close" aria-label="Close preview">&times;</button>
+      </header>
+      <div class="preview-body" id="previewBody"></div>
+      <footer class="preview-footer">
+        <button id="editBtn" class="btn secondary">Back / Edit</button>
+        <button id="confirmSubmitBtn" class="btn">Confirm &amp; Submit</button>
+      </footer>
+    </div>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>
+
