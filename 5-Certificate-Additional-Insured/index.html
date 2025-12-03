@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Certificate / Additional Insured / Loss Payee Request — Charity One</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+
+  <!-- Use existing shared stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="header-inner">
+      <img src="charity_one_logo.png" alt="Charity One Logo" class="logo" onerror="this.style.display='none'"/>
+    </div>
+  </header>
+
+  <div class="divider-white" aria-hidden="true"></div>
+  <div class="divider-grey" aria-hidden="true"></div>
+
+  <div class="header-bottom">
+    <div class="subtitle"></div>
+  </div>
+
+  <div class="form-title">
+    <h1 class="title">Certificate, Additional Insured, or Loss Payee Request</h1>
+  </div>
+  <!-- Header -->
+
+  <main class="container" role="main">
+    <div class="card" aria-live="polite">
+      <form id="certAiForm" class="form" novalidate>
+
+        <!-- Intro / E&O safe -->
+        <div>
+          <p class="intro">Use this form to request a Certificate of Insurance, add an Additional Insured, or request a Loss Payee. Select the request type below to see the specific fields required.</p>
+        </div>
+
+        <!-- SECTION A: Organization Name -->
+        <div class="section" id="sec-org">
+          <div class="section-title"><span class="q-number">1.</span>Organization Name <span class="required-star">*</span></div>
+          <input id="orgName" name="orgName" class="answer" type="text" placeholder="Legal or operating name" required aria-required="true" />
+        </div>
+
+        <!-- 2 Request Type -->
+        <div class="section" id="sec-request-type">
+          <div class="section-title"><span class="q-number">2.</span>Request Type <span class="required-star">*</span></div>
+          <div class="choice-group" role="radiogroup" aria-labelledby="sec-request-type">
+            <label class="choice-item"><input type="radio" name="requestType" value="certificate_only" required aria-required="true"/> Certificate of Insurance Only</label>
+            <label class="choice-item"><input type="radio" name="requestType" value="certificate_ai" required aria-required="true"/> Certificate + Additional Insured</label>
+            <label class="choice-item"><input type="radio" name="requestType" value="loss_payee" required aria-required="true"/> Loss Payee Request</label>
+          </div>
+        </div>
+
+        <!-- 2A Explanations (conditional informational blocks) -->
+        <div class="section" id="sec-explanation">
+          <div id="explain-certificate_only" class="intro hidden" data-for="certificate_only">
+            <strong>Certificate only:</strong> We will issue a standard Certificate of Insurance showing the requested coverage limits and policy dates.
+          </div>
+
+          <div id="explain-certificate_ai" class="intro hidden" data-for="certificate_ai">
+            <strong>Certificate + Additional Insured:</strong> We will prepare a certificate and add the named organization as an Additional Insured where contractually eligible.
+          </div>
+
+          <div id="explain-loss_payee" class="intro hidden" data-for="loss_payee">
+            <strong>Loss Payee:</strong> We will list the lender or finance company as Loss Payee on property contents or equipment, per your instructions.
+          </div>
+        </div>
+
+        <!-- SECTION B: Purpose of Request (shown for certificate only & certificate+AI) -->
+        <div class="section hidden" id="sec-purpose">
+          <div class="section-title"><span class="q-number">3.</span>Purpose of Request</div>
+          <select id="purposeSelect" name="purposeSelect" class="answer" aria-describedby="purposeHelp">
+            <option value="">— Select purpose —</option>
+            <option>Facility Use Agreement</option>
+            <option>Grant Requirement</option>
+            <option>Vendor Requirement</option>
+            <option>Contract Requirement</option>
+            <option>Equipment Lease</option>
+            <option>Program or Service Partnership</option>
+            <option>Event or Activity</option>
+            <option>Independent Contractor Agreement</option>
+            <option>Building Lease / Property Use</option>
+            <option>Volunteer Program Requirement</option>
+            <option>Governmental Agency Requirement</option>
+            <option>Fundraising Event</option>
+            <option value="other">Other</option>
+          </select>
+          <div id="purposeOtherWrapper" class="hidden" style="margin-top:8px;">
+            <input id="purposeOther" name="purposeOther" class="answer" type="text" placeholder="Please describe the 'Other' purpose" required aria-required="true"/>
+          </div>
+          <div id="purposeHelp" class="intro" style="margin-top:8px;">If you select "Other" please provide details.</div>
+        </div>
+
+        <!-- 4 Additional Insured Section (conditional) -->
+        <div class="section hidden" id="sec-additional-insured" data-for="certificate_ai">
+          <div class="section-title"><span class="q-number">4.</span>Additional Insured — Legal entity to be added</div>
+          <input id="aiLegalName" name="aiLegalName" class="answer" type="text" placeholder="Legal name of organization" />
+          <div class="intro" style="margin-top:8px;">Legal Name of Organization to Be Added as Additional Insured</div>
+        </div>
+
+        <!-- 5 Certificate Holder Information (shown for Certificate Only & Certificate+AI) -->
+        <div class="section hidden" id="sec-certificate-holder" data-roles="certificate_only,certificate_ai">
+          <div class="section-title"><span class="q-number">5.</span>Certificate Holder Information</div>
+          <input id="holderName" name="holderName" class="answer" type="text" placeholder="Certificate Holder Name" />
+          <div style="height:8px"></div>
+          <textarea id="holderAddress" name="holderAddress" class="answer" placeholder="Mailing address or email for certificate delivery (single field)"></textarea>
+          <div style="height:8px"></div>
+          <textarea id="holderDetails" name="holderDetails" class="answer" placeholder="Additional details (optional)"></textarea>
+        </div>
+
+        <!-- 6 Loss Payee Section (conditional) -->
+        <div class="section hidden" id="sec-loss-payee" data-for="loss_payee">
+          <div class="section-title"><span class="q-number">6.</span>Loss Payee Information</div>
+          <input id="lpName" name="lpName" class="answer" type="text" placeholder="Lender or Finance Company Name" />
+          <div style="height:8px"></div>
+          <textarea id="lpAddress" name="lpAddress" class="answer" placeholder="Lender mailing address or instructions (single field)"></textarea>
+          <div style="height:8px"></div>
+          <textarea id="lpDetails" name="lpDetails" class="answer" placeholder="Additional details (optional)"></textarea>
+        </div>
+
+        <!-- SECTION C — Uploads & Delivery -->
+        <div class="section" id="sec-uploads">
+          <div class="section-title"><span class="q-number">7.</span>Upload Documents (optional)</div>
+          <input id="uploadFiles" name="uploadFiles" class="answer" type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
+          <div class="file-input-note intro" style="margin-top:8px;">
+            To help ensure your certificate is issued in full compliance with the contract or requirements, please upload any supporting documents such as contracts, agreements, or lender instructions. Providing these documents helps prevent delays or corrections.
+          </div>
+        </div>
+
+        <div class="section" id="sec-delivery">
+          <div class="section-title"><span class="q-number">8.</span>Email Address for Certificate Delivery <span class="required-star">*</span></div>
+          <input id="deliveryEmail" name="deliveryEmail" class="answer" type="email" placeholder="email@example.org" required aria-required="true"/>
+        </div>
+
+        <!-- SECTION D — SUBMIT -->
+        <div class="section" id="sec-submit">
+          <div class="actions">
+            <div class="muted-small">
+            Fields marked <span class="required-star">*</span> are required
+          </div>
+              <button id="previewBtn" type="button" class="btn secondary">Preview</button>
+              <button id="submitBtn" class="btn" type="submit">Submit</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="statusMsg" class="message hidden" aria-hidden="true" style="margin-top:12px;"></div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Preview Modal-->
+  <div id="previewModal" class="preview-modal hidden" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+    <div class="preview-dialog" role="document">
+      <header class="preview-header">
+        <h3 id="previewTitle">Preview your request</h3>
+        <button id="closePreview" class="preview-close" aria-label="Close preview">&times;</button>
+      </header>
+      <div class="preview-body" id="previewBody"></div>
+      <footer class="preview-footer">
+        <button id="editBtn" class="btn secondary">Back / Edit</button>
+        <button id="confirmSubmitBtn" class="btn">Confirm & Submit</button>
+      </footer>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
