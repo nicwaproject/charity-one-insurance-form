@@ -13,17 +13,42 @@ const submitBtn = document.getElementById("submitBtn");
 const statusMsg = document.getElementById("statusMsg");
 
 const requestTypeRadios = document.querySelectorAll("input[name='requestType']");
+
+// Explanation blocks (inside card)
+const exCert = document.getElementById("exPlain_cert_only");
+const exAI = document.getElementById("exPlain_ai");
+const exLoss = document.getElementById("exPlain_loss");
+
+// Sections inside the Request Card
+const reqCard = document.getElementById("reqCard");
+
+const secPurpose = document.getElementById("secPurpose");
+const secAISection = document.getElementById("secAdditionalInsured");
+const secCertHolder = document.getElementById("secCertificateHolder");
+const secLossPayee = document.getElementById("ecLossPayee");
+
 const purposeSelect = document.getElementById("purposeSelect");
 const purposeOtherWrapper = document.getElementById("purposeOtherWrapper");
 const purposeOther = document.getElementById("purposeOther");
 
-const secPurpose = document.getElementById("sec-purpose");
-const secAdditionalInsured = document.getElementById("sec-additional-insured");
-const secCertificateHolder = document.getElementById("sec-certificate-holder");
-const secLossPayee = document.getElementById("sec-loss-payee");
+// Certificate Holder fields
+const holderName = document.getElementById("holderName");
+const holderAddress = document.getElementById("holderAddress");
+const holderDetails = document.getElementById("holderDetails");
 
-const secExplanation = document.getElementById("sec-explanation");
+// Additional Insured field
+const aiLegalName = document.getElementById("aiLegalName");
 
+// Loss Payee fields
+const lpName = document.getElementById("lpName");
+const lpAddress = document.getElementById("lpAddress");
+const lpDetails = document.getElementById("lpDetails");
+
+// Upload & delivery email
+const uploadFiles = document.getElementById("uploadFiles");
+const deliveryEmail = document.getElementById("deliveryEmail");
+
+// Preview modal
 const previewModal = document.getElementById("previewModal");
 const previewBody = document.getElementById("previewBody");
 const closePreview = document.getElementById("closePreview");
@@ -38,7 +63,7 @@ function show(el) { el.classList.remove("hidden"); }
 function hide(el) { el.classList.add("hidden"); }
 
 function escapeHtml(str) {
-  return (str ?? "").toString().replace(/[&<>'"]/g, c =>
+  return (str ?? "").replace(/[&<>'"]/g, c =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[c])
   );
 }
@@ -57,69 +82,89 @@ function disableSection(section, disable = true) {
 
 
 /* ---------------------------------------------------
+   RESET ALL INSIDE CARD
+---------------------------------------------------- */
+function hideAllInsideCard() {
+  hide(exCert);
+  hide(exAI);
+  hide(exLoss);
+
+  hide(secPurpose);
+  hide(secAISection);
+  hide(secCertHolder);
+  hide(secLossPayee);
+
+  disableSection(secPurpose, true);
+  disableSection(secAISection, true);
+  disableSection(secCertHolder, true);
+  disableSection(secLossPayee, true);
+
+  // Clear required state
+  reqCard.querySelectorAll("[required]").forEach(el => {
+    el.required = false;
+  });
+}
+
+
+/* ---------------------------------------------------
    REQUEST TYPE LOGIC
 ---------------------------------------------------- */
 function handleRequestTypeChange() {
   const type = document.querySelector("input[name='requestType']:checked")?.value;
 
-  // Hide all sections first
-  hide(secPurpose);
-  hide(secAdditionalInsured);
-  hide(secCertificateHolder);
-  hide(secLossPayee);
+  reqCard.classList.remove("hidden"); // Always show card after choosing type
 
-  disableSection(secPurpose, true);
-  disableSection(secAdditionalInsured, true);
-  disableSection(secCertificateHolder, true);
-  disableSection(secLossPayee, true);
-
-  // Reset explanations
-  secExplanation.querySelectorAll("[data-for]").forEach(el => hide(el));
+  hideAllInsideCard();
 
   if (!type) return;
 
-  // Show relevant informational block
-  const info = secExplanation.querySelector(`[data-for="${type}"]`);
-  if (info) show(info);
+  /* Show explanation */
+  if (type === "certificate_only") show(exCert);
+  if (type === "certificate_ai") show(exAI);
+  if (type === "loss_payee") show(exLoss);
 
-  /* LOGIC TABLE */
+  /* LOGIC RULES */
   if (type === "certificate_only") {
     show(secPurpose);
-    show(secCertificateHolder);
+    show(secCertHolder);
 
     disableSection(secPurpose, false);
-    disableSection(secCertificateHolder, false);
+    disableSection(secCertHolder, false);
 
     purposeSelect.required = true;
-    document.getElementById("holderName").required = true;
-    document.getElementById("holderAddress").required = true;
+    holderName.required = true;
+    holderAddress.required = true;
 
   } else if (type === "certificate_ai") {
     show(secPurpose);
-    show(secAdditionalInsured);
-    show(secCertificateHolder);
+    show(secAISection);
+    show(secCertHolder);
 
     disableSection(secPurpose, false);
-    disableSection(secAdditionalInsured, false);
-    disableSection(secCertificateHolder, false);
+    disableSection(secAISection, false);
+    disableSection(secCertHolder, false);
 
     purposeSelect.required = true;
-    document.getElementById("aiLegalName").required = true;
-    document.getElementById("holderName").required = true;
-    document.getElementById("holderAddress").required = true;
+    aiLegalName.required = true;
+    holderName.required = true;
+    holderAddress.required = true;
 
   } else if (type === "loss_payee") {
     show(secLossPayee);
     disableSection(secLossPayee, false);
 
-    document.getElementById("lpName").required = true;
-    document.getElementById("lpAddress").required = true;
+    lpName.required = true;
+    lpAddress.required = true;
   }
 }
 
+requestTypeRadios.forEach(r =>
+  r.addEventListener("change", handleRequestTypeChange)
+);
+
 
 /* ---------------------------------------------------
-   PURPOSE LOGIC
+   PURPOSE — "OTHER" LOGIC
 ---------------------------------------------------- */
 purposeSelect.addEventListener("change", () => {
   if (purposeSelect.value === "other") {
@@ -132,11 +177,6 @@ purposeSelect.addEventListener("change", () => {
 });
 
 
-requestTypeRadios.forEach(r =>
-  r.addEventListener("change", handleRequestTypeChange)
-);
-
-
 /* ---------------------------------------------------
    BUILD PAYLOAD
 ---------------------------------------------------- */
@@ -145,24 +185,19 @@ function buildPayload() {
     organizationName: orgName.value,
     requestType: document.querySelector("input[name='requestType']:checked")?.value,
 
-    // Purpose section
     purpose: purposeSelect.value,
     purposeOther: purposeOther.value,
 
-    // Additional Insured
     additionalInsuredName: aiLegalName.value,
 
-    // Certificate Holder
     holderName: holderName.value,
     holderAddress: holderAddress.value,
     holderDetails: holderDetails.value,
 
-    // Loss Payee
     lossPayeeName: lpName.value,
     lossPayeeAddress: lpAddress.value,
     lossPayeeDetails: lpDetails.value,
 
-    // Upload (only file names)
     uploadedFiles: [...uploadFiles.files].map(f => f.name),
 
     deliveryEmail: deliveryEmail.value,
@@ -186,7 +221,10 @@ function validateForm() {
    PREVIEW MODAL
 ---------------------------------------------------- */
 function addRow(rows, label, value) {
-  const v = value ? escapeHtml(value) : `<span style="color:#778;">(not provided)</span>`;
+  const v = value
+    ? escapeHtml(value)
+    : `<span style="color:#777;">(not provided)</span>`;
+
   rows.push(`
     <div class="preview-row">
       <div class="preview-label">${escapeHtml(label)}</div>
@@ -203,7 +241,9 @@ function showPreview(payload) {
 
   if (payload.requestType !== "loss_payee") {
     addRow(rows, "Purpose", payload.purpose);
-    if (payload.purpose === "other") addRow(rows, "Other Purpose", payload.purposeOther);
+    if (payload.purpose === "other") {
+      addRow(rows, "Other Purpose", payload.purposeOther);
+    }
   }
 
   if (payload.requestType === "certificate_ai") {
@@ -230,7 +270,7 @@ function showPreview(payload) {
 }
 
 
-/* Preview button */
+/* PREVIEW button */
 previewBtn.addEventListener("click", () => {
   if (!validateForm()) return;
   const payload = buildPayload();
@@ -241,7 +281,7 @@ previewBtn.addEventListener("click", () => {
 closePreview.addEventListener("click", () => hide(previewModal));
 editBtn.addEventListener("click", () => hide(previewModal));
 
-/* Final submit from preview */
+/* Confirm submit */
 confirmSubmitBtn.addEventListener("click", () => {
   hide(previewModal);
   form.dispatchEvent(new Event("submit"));
@@ -249,7 +289,7 @@ confirmSubmitBtn.addEventListener("click", () => {
 
 
 /* ---------------------------------------------------
-   SUBMIT HANDLER (DEMO MODE)
+   SUBMIT (DEMO MODE)
 ---------------------------------------------------- */
 form.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -262,10 +302,10 @@ form.addEventListener("submit", (e) => {
     <pre>${escapeHtml(JSON.stringify(payload, null, 2))}</pre>
   `;
   statusMsg.classList.remove("hidden");
-  window.scrollTo({ top: statusMsg.offsetTop - 50, behavior: "smooth" });
+  window.scrollTo({ top: statusMsg.offsetTop - 60, behavior: "smooth" });
 });
 
 
-/* Initialize on page load */
-handleRequestTypeChange();
+/* INIT */
 hide(purposeOtherWrapper);
+handleRequestTypeChange();

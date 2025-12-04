@@ -261,6 +261,28 @@ summary {
   color: #d64545 !important;
 }
 
+/* Revision 1*/
+textarea {
+  min-height: 90px !important;
+  resize: vertical;
+}
+
+.section {
+  margin-bottom: 24px !important;
+}
+
+#addVehicleBtn {
+    width: 100%;
+}
+
+.vehicle-card {
+  border: 1px solid #d5dde5;
+  background: #f9fbfd;
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 20px;
+}
+
  /* preview modal */
   .preview-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(6,20,30,0.45);z-index:1200;padding:20px;}
   .preview-dialog{width:100%;max-width:760px;background:#fff;border-radius:10px;box-shadow:0 10px 30px rgba(2,20,40,0.3);overflow:hidden;max-height:90vh;display:flex;flex-direction:column;}
