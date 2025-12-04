@@ -260,6 +260,53 @@ summary {
 .required-star {
   color: #d64545 !important;
 }
+/* Revision 1 */
+.form-container {
+    margin: 20px 0;
+}
+
+textarea {
+  min-height: 90px !important;
+  resize: vertical;
+}
+
+.section {
+  margin-bottom: 24px !important;
+}
+
+#addVehicleBtn {
+    width: 100%;
+}
+
+.vehicle-card {
+  border: 1px solid #d5dde5;
+  background: #f9fbfd;
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.vehicle-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vehicle-card-header .vehicle-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: #1d3557;
+}
+
+/* Grouped input spacing */
+.vehicle-card .answer {
+  margin-top: 8px;
+}
+
+.radio-inline label {
+  margin-right: 12px;
+}
 
  /* preview modal */
   .preview-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(6,20,30,0.45);z-index:1200;padding:20px;}

@@ -97,21 +97,21 @@
             </label>
 
             <!-- (conditional) -->
-            <div class="section hidden" id="removeVehicleSection">
+            <div class="section vehicle-card hidden" id="removeVehicleSection">
               <label class="section-title">Remove Vehicle <span class="required-star">*</span></label>
 
-              <div style="margin-top:10px;">
+              <div class="form-container">
 
                 <label class="sub-section-title">
                   Which vehicle should be removed? <span class="required-star">*</span>
                 </label>
-                <input
+                <textarea
                   type="text"
                   id="remove_vehicle_id"
                   class="answer"
                   placeholder='e.g. "2020 Ford Transit" or "VIN ending 3847"'
                   style="margin-top:6px;"
-                >
+                ></textarea>
 
                 <!-- Effective date -->
                 <label class="sub-section-title" style="margin-top:14px;">
@@ -158,65 +158,66 @@
             </label>
 
             <!-- Update / Revise Section -->
-            <div class="section hidden" id="updateVehicleSection">
+            <div class="section vehicle-card hidden" id="updateVehicleSection">
 
               <label class="section-title">Update / Revise Vehicle Information</label>
+              <div class="form-container">
+                  <!-- Which vehicle -->
+                  <label class="sub-section-title">
+                    Which vehicle are you updating? <span class="required-star">*</span>
+                  </label>
+                  <input type="text" id="updateVehicleId" name="update_vehicle_id" class="answer" placeholder="e.g., 2020 Ford Transit or VIN ending 3847">
 
-              <!-- Which vehicle -->
-              <label class="sub-section-title">
-                Which vehicle are you updating? <span class="required-star">*</span>
-              </label>
-              <input type="text" id="updateVehicleId" name="update_vehicle_id" class="answer" placeholder="e.g., 2020 Ford Transit or VIN ending 3847">
+                  <!-- What needs to be updated -->
+                  <label class="sub-section-title">
+                    What needs to be updated or corrected? <span class="required-star">*</span>
+                  </label>
+                  <select id="updateType" name="update_type" class="answer">
+                    <option value="">-- select type --</option>
+                    <option value="vin">VIN correction</option>
+                    <option value="garaging">Garaging address update</option>
+                    <option value="driver_usage">Driver or usage update</option>
+                    <option value="name_typo">Name or typo correction</option>
+                    <option value="other_change">Other change</option>
+                  </select>
 
-              <!-- What needs to be updated -->
-              <label class="sub-section-title">
-                What needs to be updated or corrected? <span class="required-star">*</span>
-              </label>
-              <select id="updateType" name="update_type" class="answer">
-                <option value="">-- select type --</option>
-                <option value="vin">VIN correction</option>
-                <option value="garaging">Garaging address update</option>
-                <option value="driver_usage">Driver or usage update</option>
-                <option value="name_typo">Name or typo correction</option>
-                <option value="other_change">Other change</option>
-              </select>
+                  <!-- Describe the change -->
+                  <div id="updateTypeOtherContainer" class="hidden" style="margin-top:8px;">
+                    <label class="sub-section-title">
+                      Describe the change <span class="required-star">*</span>
+                    </label>
+                    <textarea id="updateTypeOther" name="update_type_other" class="answer"></textarea>
+                  </div>
 
-              <!-- Describe the change -->
-              <div id="updateTypeOtherContainer" class="hidden" style="margin-top:8px;">
-                <label class="sub-section-title">
-                  Describe the change <span class="required-star">*</span>
-                </label>
-                <textarea id="updateTypeOther" name="update_type_other" class="answer"></textarea>
-              </div>
+                  <!-- Updated information -->
+                  <label class="sub-section-title">
+                    Updated information <span class="required-star">*</span>
+                  </label>
+                  <textarea id="updateDetails" name="update_details" class="answer" placeholder="Describe the updated information"></textarea>
 
-              <!-- Updated information -->
-              <label class="sub-section-title">
-                Updated information <span class="required-star">*</span>
-              </label>
-              <textarea id="updateDetails" name="update_details" class="answer" placeholder="Describe the updated information"></textarea>
+                  <!-- Transport clients? -->
+                  <label class="sub-section-title">Is this vehicle used to transport clients, participants, or residents?</label>
+                  <div class="radio-group" style="margin:6px 0; font-size:14px;">
+                    <label><input type="radio" name="update_client_transport" value="yes"> Yes</label>
+                    <label style="margin-left:15px;"><input type="radio" name="update_client_transport" value="no"> No</label>
+                    <label style="margin-left:15px;"><input type="radio" name="update_client_transport" value="no_change"> No change</label>
+                  </div>
 
-              <!-- Transport clients? -->
-              <label class="sub-section-title">Is this vehicle used to transport clients, participants, or residents?</label>
-              <div class="radio-group" style="margin:6px 0; font-size:14px;">
-                <label><input type="radio" name="update_client_transport" value="yes"> Yes</label>
-                <label style="margin-left:15px;"><input type="radio" name="update_client_transport" value="no"> No</label>
-                <label style="margin-left:15px;"><input type="radio" name="update_client_transport" value="no_change"> No change</label>
-              </div>
+                  <!-- Notes about client transport -->
+                  <div id="updateClientTransportNotesContainer" class="hidden" style="margin-top:8px;">
+                    <label class="sub-section-title">Notes about client transport</label>
+                    <textarea id="updateClientTransportNotes" name="update_client_transport_notes" class="answer"></textarea>
+                  </div>
 
-              <!-- Notes about client transport -->
-              <div id="updateClientTransportNotesContainer" class="hidden" style="margin-top:8px;">
-                <label class="sub-section-title">Notes about client transport</label>
-                <textarea id="updateClientTransportNotes" name="update_client_transport_notes" class="answer"></textarea>
-              </div>
+                  <!-- Effective date -->
+                  <label class="sub-section-title">Effective date for this change</label>
+                  <input type="date" id="updateEffectiveDate" name="update_effective_date" class="answer">
 
-              <!-- Effective date -->
-              <label class="sub-section-title">Effective date for this change</label>
-              <input type="date" id="updateEffectiveDate" name="update_effective_date" class="answer">
-
-              <!-- File upload -->
-              <div style="margin-top:8px;">
-                <input type="file" id="updateSupportingDoc" name="update_supporting_document" class="answer">
-                <div class="intro">Upload supporting document (optional)</div>
+                  <!-- File upload -->
+                  <div style="margin-top:8px;">
+                    <input type="file" id="updateSupportingDoc" name="update_supporting_document" class="answer">
+                    <div class="intro">Upload supporting document (optional)</div>
+                  </div>
               </div>
 
             </div>
@@ -227,7 +228,7 @@
             </label>
 
             <!-- Other Change Section -->
-            <div class="section hidden" id="otherChangeSection">
+            <div class="section vehicle-card hidden" id="otherChangeSection">
 
               <label class="section-title">Other Change</label>
               <br>

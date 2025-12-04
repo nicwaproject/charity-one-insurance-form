@@ -76,73 +76,72 @@ function createVehicleRow(data = {}) {
   wrapper.style.marginTop = "20px";
 
   wrapper.innerHTML = `
-    <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;">
-      <div class="sub-section-title">Vehicle <span class="required-star">*</span></div>
-      <button type="button" class="btn secondary small remove-vehicle-btn">Remove</button>
+    <div class="vehicle-card" data-uid="${uid}">
+
+  <div class="vehicle-card-header">
+    <h3 class="vehicle-title">Vehicle</h3>
+    <button type="button" class="btn secondary small remove-vehicle-btn">Remove</button>
+  </div>
+
+  <div class="vehicle-card-body">
+
+    <label class="sub-section-title">Vehicle Information <span class="required-star">*</span></label>
+
+    <input class="answer veh-year" type="number" placeholder="Year *" value="${data.year || ''}">
+    <input class="answer veh-make" placeholder="Make *" value="${data.make || ''}">
+    <input class="answer veh-model" placeholder="Model *" value="${data.model || ''}">
+    <input class="answer veh-vin" placeholder="VIN *" value="${data.vin || ''}">
+
+    <textarea class="answer veh-garaging" placeholder="Garaging address *">${data.garaging || ''}</textarea>
+    <p class="intro">Please enter full address: Street, City, State, ZIP.</p>
+
+    <label class="sub-section-title" style="margin-top:12px;">Primary use <span class="required-star">*</span></label>
+    <select class="answer veh-primary-use">
+      <option value="">-- select --</option>
+      <option value="Agency administration" ${data.primaryUse === 'Agency administration' ? 'selected':''}>Agency administration</option>
+      <option value="Client transport" ${data.primaryUse === 'Client transport' ? 'selected':''}>Client transport</option>
+      <option value="Deliveries or pickups" ${data.primaryUse === 'Deliveries or pickups' ? 'selected':''}>Deliveries or pickups</option>
+      <option value="Maintenance or service" ${data.primaryUse === 'Maintenance or service' ? 'selected':''}>Maintenance or service</option>
+      <option value="Other agency use" ${data.primaryUse === 'Other agency use' ? 'selected':''}>Other agency use</option>
+    </select>
+
+    <label class="sub-section-title" style="margin-top:12px;">Ownership <span class="required-star">*</span></label>
+    <select class="answer veh-ownership">
+      <option value="">-- select --</option>
+      <option value="Owned" ${data.ownership === 'Owned' ? 'selected':''}>Owned</option>
+      <option value="Financed" ${data.ownership === 'Financed' ? 'selected':''}>Financed</option>
+      <option value="Leased" ${data.ownership === 'Leased' ? 'selected':''}>Leased</option>
+    </select>
+
+    <input class="answer veh-lienholder" placeholder="Lienholder / lessor name (optional)" value="${data.lienholder || ''}">
+
+    <label class="sub-section-title" style="margin-top:12px;">Is this vehicle used to transport clients? <span class="required-star">*</span></label>
+    <div class="radio-inline">
+      <label><input type="radio" name="client-trans-${uid}" value="Yes"> Yes</label>
+      <label><input type="radio" name="client-trans-${uid}" value="No"> No</label>
     </div>
 
-    <div style="margin-top:8px;">
+    <textarea class="answer veh-client-transport-notes" placeholder="Notes (optional)" style="display:none;">${data.clientNotes || ''}</textarea>
 
-      <input class="answer veh-year" type="number" placeholder="Year *" value="${data.year || ''}">
+    <label class="sub-section-title" style="margin-top:12px;">Estimated usage (optional)</label>
+    <select class="answer veh-estimated-usage">
+      <option value="">-- select --</option>
+      <option value="Local only" ${data.estimatedUsage === 'Local only' ? 'selected':''}>Local only</option>
+      <option value="Within state" ${data.estimatedUsage === 'Within state' ? 'selected':''}>Within state</option>
+      <option value="Multi state travel" ${data.estimatedUsage === 'Multi state travel' ? 'selected':''}>Multi state travel</option>
+    </select>
 
-      <input class="answer veh-make" placeholder="Make *" style="margin-top:8px;" value="${data.make || ''}">
+    <label class="sub-section-title" style="margin-top:12px;">Effective date to add <span class="required-star">*</span></label>
+    <input class="answer veh-effdate" type="date" value="${data.effdate || ''}">
 
-      <input class="answer veh-model" placeholder="Model *" style="margin-top:8px;" value="${data.model || ''}">
-
-      <input class="answer veh-vin" placeholder="VIN *" style="margin-top:8px;" value="${data.vin || ''}">
-
-      <textarea class="answer veh-garaging" placeholder="Garaging address *" style="margin-top:8px;">${data.garaging || ''}</textarea>
-
-      <label class="sub-section-title" style="margin-top:12px;">Primary use <span class="required-star">*</span></label>
-      <select class="answer veh-primary-use" style="margin-top:6px;">
-        <option value="">-- select --</option>
-        <option value="Agency administration"${data.primaryUse === 'Agency administration' ? ' selected' : ''}>Agency administration</option>
-        <option value="Client transport"${data.primaryUse === 'Client transport' ? ' selected' : ''}>Client transport</option>
-        <option value="Deliveries or pickups"${data.primaryUse === 'Deliveries or pickups' ? ' selected' : ''}>Deliveries or pickups</option>
-        <option value="Maintenance or service"${data.primaryUse === 'Maintenance or service' ? ' selected' : ''}>Maintenance or service</option>
-        <option value="Other agency use"${data.primaryUse === 'Other agency use' ? ' selected' : ''}>Other agency use</option>
-      </select>
-
-      <label class="sub-section-title" style="margin-top:12px;">Ownership <span class="required-star">*</span></label>
-      <select class="answer veh-ownership" style="margin-top:6px;">
-        <option value="">-- select --</option>
-        <option value="Owned"${data.ownership === 'Owned' ? ' selected' : ''}>Owned</option>
-        <option value="Financed"${data.ownership === 'Financed' ? ' selected' : ''}>Financed</option>
-        <option value="Leased"${data.ownership === 'Leased' ? ' selected' : ''}>Leased</option>
-      </select>
-
-      <input class="answer veh-lienholder" placeholder="Lienholder / lessor name (optional)" style="margin-top:8px;" value="${data.lienholder || ''}">
-
-      <div style="margin-top:12px;">
-        <label class="sub-section-title">Is this vehicle used to transport clients, participants, or residents? <span class="required-star">*</span></label>
-
-        <div style="margin:6px 0; font-size:14px;">
-          <label><input type="radio" name="client-trans-${uid}" value="Yes"> Yes</label>
-          <label style="margin-left:12px;"><input type="radio" name="client-trans-${uid}" value="No"> No</label>
-        </div>
-
-        <textarea 
-          class="answer veh-client-transport-notes" 
-          placeholder="Notes about client transport (optional)" 
-          style="margin-top:8px; display:none;"></textarea>
-      </div>
-
-      <label class="sub-section-title" style="margin-top:12px;">Estimated usage (optional)</label>
-      <select class="answer veh-estimated-usage" style="margin-top:6px;">
-        <option value="">-- select --</option>
-        <option value="Local only"${data.estimatedUsage === 'Local only' ? ' selected' : ''}>Local only</option>
-        <option value="Within state"${data.estimatedUsage === 'Within state' ? ' selected' : ''}>Within state</option>
-        <option value="Multi state travel"${data.estimatedUsage === 'Multi state travel' ? ' selected' : ''}>Multi state travel</option>
-      </select>
-
-      <label class="sub-section-title" style="margin-top:12px;">Effective date to add <span class="required-star">*</span></label>
-      <input class="answer veh-effdate" type="date" style="margin-top:6px;" value="${data.effdate || ''}">
-
-      <div style="margin-top:12px;">
-        <input type="file" class="answer veh-doc">
-        <div class="intro">Upload supporting document (optional)</div>
-      </div>
+    <div style="margin-top:12px;">
+      <input type="file" class="answer veh-doc">
+      <div class="intro">Upload supporting document (optional)</div>
     </div>
+
+  </div> <!-- end vehicle-card-body -->
+
+</div> <!-- end vehicle-card -->
   `;
 
   // ADD EVENT: toggle client-transport notes
@@ -156,14 +155,27 @@ function createVehicleRow(data = {}) {
   // ADD EVENT: remove row
   wrapper.querySelector('.remove-vehicle-btn').addEventListener('click', () => {
     wrapper.remove();
+    renumberVehicles();
   });
 
   return wrapper;
 }
+// renumberVehicles
+function renumberVehicles() {
+  const cards = document.querySelectorAll('.vehicle-card');
+  console.log("Cards found:", cards.length);
+  
+  cards.forEach((card, i) => {
+    const title = card.querySelector('.vehicle-title');
+    if (title) title.textContent = `Vehicle #${i + 1}`;
+  });
+}
 
+// add vehicle button
 addVehicleBtn.addEventListener('click', ()=>{
   const row = createVehicleRow();
   vehicleList.appendChild(row);
+  renumberVehicles();
   // scroll to new row
   row.scrollIntoView({behavior:'smooth', block:'center'});
 });
