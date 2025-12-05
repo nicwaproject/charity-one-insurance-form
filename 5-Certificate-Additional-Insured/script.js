@@ -112,13 +112,19 @@ function hideAllInsideCard() {
 function handleRequestTypeChange() {
   const type = document.querySelector("input[name='requestType']:checked")?.value;
 
-  reqCard.classList.remove("hidden"); // Always show card after choosing type
+  if (type) {
+    reqCard.classList.remove("hidden"); // Only show AFTER user selects request type
+  }
 
   hideAllInsideCard();
 
   if (!type) return;
 
   /* Show explanation */
+  if (!type) {
+    hide(reqCard);
+    return;
+  }
   if (type === "certificate_only") show(exCert);
   if (type === "certificate_ai") show(exAI);
   if (type === "loss_payee") show(exLoss);
@@ -307,5 +313,5 @@ form.addEventListener("submit", (e) => {
 
 
 /* INIT */
+hide(reqCard);  
 hide(purposeOtherWrapper);
-handleRequestTypeChange();

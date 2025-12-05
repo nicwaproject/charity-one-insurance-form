@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Request Auto Quote or Add Auto — Charity One</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="header-inner">
+      <img src="charity_one_logo.png" alt="Charity One Logo" class="logo" onerror="this.style.display='none'"/>
+    </div>
+  </header>
+
+  <div class="divider-white" aria-hidden="true"></div>
+  <div class="divider-grey" aria-hidden="true"></div>
+
+  <div class="form-title">
+    <h1 class="title">Request Auto Quote or Add Auto to New Policy</h1>
+  </div>
+
+  <main class="container">
+    <form id="autoForm" class="card" novalidate>
+
+      <div class="section">
+        <p class="intro">Use this form to request an automobile insurance quote or to add auto coverage to a new policy. Vehicles must be owned by your organization or supported by a written agreement that places vehicle responsibility on your organization.</p>
+      </div>
+
+      <!-- Action Selection (informational only) -->
+      <div class="section">
+        <div class="section-title"><span class="q-number">1.</span> What would you like to do?</div>
+        <div class="choice-group">
+          <label class="choice-item"><input type="radio" name="actionType" value="quote"> Request an automobile insurance quote</label>
+          <label class="choice-item"><input type="radio" name="actionType" value="add_policy"> Add automobile coverage to a new policy</label>
+        </div>
+      </div>
+
+      <!-- Ownership / Responsibility -->
+      <div class="section">
+        <div class="section-title"><span class="q-number">2.</span> Is the vehicle owned by the organization?</div>
+        <div class="choice-group">
+          <label class="choice-item"><input type="radio" name="ownedByOrg" value="yes"> Yes</label>
+          <label class="choice-item"><input type="radio" name="ownedByOrg" value="no"> No</label>
+        </div>
+      </div>
+
+      <div class="section" id="respSection" style="display:none;">
+        <div class="section-title"><span class="q-number">3.</span> If not owned — does your organization have a written agreement that places responsibility on the organization?</div>
+        <div class="choice-group">
+          <label class="choice-item"><input type="radio" name="writtenAgreement" value="yes"> Yes</label>
+          <label class="choice-item"><input type="radio" name="writtenAgreement" value="no"> No</label>
+          <label class="choice-item"><input type="radio" name="writtenAgreement" value="unsure"> I'm not sure — please provide guidance</label>
+        </div>
+
+        <div id="respInfo" class="intro hidden" style="margin-top:8px;">
+          Automobile coverage may not be available without clear ownership or organizational responsibility. We can provide a non-binding sample agreement for review. For guidance call us at (XXX) XXX-XXXX.
+        </div>
+      </div>
+
+      <!-- SECTION 4 - Vehicle Information (repeatable) -->
+      <div class="section" id="vehiclesSection">
+        <div class="section-title"><span class="q-number">4.</span> Vehicle Information</div>
+
+        <div id="vehicleList"></div>
+
+        <button type="button" id="addVehicleBtn" class="btn secondary" style="margin-top:12px;">Add another vehicle</button>
+        <div class="intro" style="margin-top:8px;">Each vehicle: Year, Make, Model, VIN, garaging address (street/city/state/zip), purpose, ownership type. If leased → Lessor name required.</div>
+      </div>
+
+      <!-- SECTION 5 - Optional uploads -->
+      <div class="section">
+        <div class="section-title"><span class="q-number">5.</span> Optional Document Uploads</div>
+        <input id="optionalDocs" name="optionalDocs" class="answer" type="file" multiple accept=".pdf,.jpg,.png,.doc,.docx" />
+        <div class="intro" style="margin-top:8px;">Transportation agreements, registrations, prior declarations, loss runs (optional).</div>
+      </div>
+
+      <!-- SECTION 6 - Notes -->
+      <div class="section">
+        <div class="section-title"><span class="q-number">6.</span> Notes / Special Information</div>
+        <textarea id="notes" name="notes" class="answer" placeholder="Anything special we should know (optional)"></textarea>
+      </div>
+
+      <!-- SECTION 7 - Contact Info -->
+      <div class="section">
+        <div class="section-title"><span class="q-number">7.</span> Organization Contact Information <span class="required-star">*</span></div>
+        <input id="contactName" name="contactName" class="answer" type="text" placeholder="Contact name" required />
+        <input id="contactEmail" name="contactEmail" class="answer" type="email" placeholder="Contact email" required />
+        <input id="contactPhone" name="contactPhone" class="answer" type="tel" placeholder="Contact phone" required />
+      </div>
+
+      <!-- SECTION 8 - Attestation -->
+      <div class="section">
+        <div class="section-title"><span class="q-number">8.</span> Final Attestation <span class="required-star">*</span></div>
+        <label class="choice-item"><input id="attest" name="attest" type="checkbox" required /> I confirm information is accurate and the org owns the vehicle(s) or has responsibility for the automobile exposure.</label>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions" style="margin-top:14px;">
+        <div class="muted-small">Fields marked <span class="required-star">*</span> are required</div>
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button type="button" id="previewBtn" class="btn secondary">Preview</button>
+          <button type="submit" id="submitBtn" class="btn">Submit</button>
+        </div>
+      </div>
+
+      <div id="statusMsg" class="message hidden" style="margin-top:12px;"></div>
+    </form>
+  </main>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="preview-modal hidden" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+    <div class="preview-dialog" role="document">
+      <header class="preview-header">
+        <h3 id="previewTitle">Preview your request</h3>
+        <button id="closePreview" class="preview-close" aria-label="Close preview">&times;</button>
+      </header>
+      <div class="preview-body" id="previewBody"></div>
+      <footer class="preview-footer">
+        <button id="editBtn" class="btn secondary">Back / Edit</button>
+        <button id="confirmSubmitBtn" class="btn">Confirm & Submit</button>
+      </footer>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
