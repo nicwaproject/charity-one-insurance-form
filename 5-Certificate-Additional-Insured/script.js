@@ -55,6 +55,11 @@ const closePreview = document.getElementById("closePreview");
 const editBtn = document.getElementById("editBtn");
 const confirmSubmitBtn = document.getElementById("confirmSubmitBtn");
 
+const requirementRadios = document.querySelectorAll("input[name='hasRequirements']");
+const secRequirementsUpload = document.getElementById("secRequirementsUpload");
+const requirementsUpload = document.getElementById("requirementsUpload");
+
+const portalUploadLink = document.getElementById("portalUploadLink");
 
 /* ---------------------------------------------------
    UTILITIES
@@ -117,45 +122,40 @@ function handleRequestTypeChange() {
   }
 
   hideAllInsideCard();
-
   if (!type) return;
 
   /* Show explanation */
-  if (!type) {
-    hide(reqCard);
-    return;
-  }
   if (type === "certificate_only") show(exCert);
   if (type === "certificate_ai") show(exAI);
   if (type === "loss_payee") show(exLoss);
 
-  /* LOGIC RULES */
-  if (type === "certificate_only") {
-    show(secPurpose);
-    show(secCertHolder);
+  /* ✅ PURPOSE SEKARANG WAJIB UNTUK SEMUA TIPE */
+  show(secPurpose);
+  disableSection(secPurpose, false);
+  purposeSelect.required = true;
 
-    disableSection(secPurpose, false);
+  /* LOGIC RULES PER TYPE */
+  if (type === "certificate_only") {
+    show(secCertHolder);
     disableSection(secCertHolder, false);
 
-    purposeSelect.required = true;
     holderName.required = true;
     holderAddress.required = true;
 
-  } else if (type === "certificate_ai") {
-    show(secPurpose);
+  } 
+  else if (type === "certificate_ai") {
     show(secAISection);
     show(secCertHolder);
 
-    disableSection(secPurpose, false);
     disableSection(secAISection, false);
     disableSection(secCertHolder, false);
 
-    purposeSelect.required = true;
     aiLegalName.required = true;
     holderName.required = true;
     holderAddress.required = true;
 
-  } else if (type === "loss_payee") {
+  } 
+  else if (type === "loss_payee") {
     show(secLossPayee);
     disableSection(secLossPayee, false);
 
@@ -164,10 +164,25 @@ function handleRequestTypeChange() {
   }
 }
 
+
 requestTypeRadios.forEach(r =>
   r.addEventListener("change", handleRequestTypeChange)
 );
 
+requirementRadios.forEach(radio => {
+  radio.addEventListener("change", () => {
+    if (radio.value === "yes" && radio.checked) {
+      secRequirementsUpload.classList.remove("hidden");
+      requirementsUpload.required = true;
+    }
+
+    if (radio.value === "no" && radio.checked) {
+      secRequirementsUpload.classList.add("hidden");
+      requirementsUpload.required = false;
+      requirementsUpload.value = "";
+    }
+  });
+});
 
 /* ---------------------------------------------------
    PURPOSE — "OTHER" LOGIC
@@ -204,9 +219,15 @@ function buildPayload() {
     lossPayeeAddress: lpAddress.value,
     lossPayeeDetails: lpDetails.value,
 
-    uploadedFiles: [...uploadFiles.files].map(f => f.name),
+    hasInsuranceRequirements:
+    document.querySelector("input[name='hasRequirements']:checked")?.value || "",
+
+    uploadedRequirementsFile:
+      requirementsUpload?.files?.[0]?.name || "",
 
     deliveryEmail: deliveryEmail.value,
+
+    portalUploadLink: portalUploadLink.value,
   };
 }
 
@@ -268,8 +289,17 @@ function showPreview(payload) {
     addRow(rows, "Details", payload.lossPayeeDetails);
   }
 
-  addRow(rows, "Uploaded Files", payload.uploadedFiles.join(", "));
+  addRow(rows, "Has Insurance Requirements", payload.hasInsuranceRequirements);
+
+  if (payload.hasInsuranceRequirements === "yes") {
+    addRow(rows, "Uploaded Requirements File", payload.uploadedRequirementsFile);
+  }
+
   addRow(rows, "Delivery Email", payload.deliveryEmail);
+  
+  if (payload.portalUploadLink) {
+  addRow(rows, "Portal Upload Link", payload.portalUploadLink);
+  }
 
   previewBody.innerHTML = rows.join("");
   show(previewModal);

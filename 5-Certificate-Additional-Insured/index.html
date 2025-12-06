@@ -51,7 +51,7 @@
         <div class="section" id="sec-request-type">
           <div class="section-title"><span class="q-number">2.</span>Request Type <span class="required-star">*</span></div>
           <div class="choice-group" role="radiogroup" aria-labelledby="sec-request-type">
-            <label class="choice-item"><input type="radio" name="requestType" value="certificate_only" required aria-required="true"/> Certificate of Insurance Only</label>
+            <label class="choice-item"><input type="radio" name="requestType" value="certificate_only" required aria-required="true"/> Proof of Coverage</label>
             <label class="choice-item"><input type="radio" name="requestType" value="certificate_ai" required aria-required="true"/> Certificate + Additional Insured</label>
             <label class="choice-item"><input type="radio" name="requestType" value="loss_payee" required aria-required="true"/> Loss Payee Request</label>
           </div>
@@ -60,10 +60,10 @@
         <div id="reqCard" class="vehicle-card hidden">
 
               <!-- Explanation blocks -->
-              <p id="exPlain_cert_only" class="intro hidden">We will issue a standard Certificate showing policy limits and dates.</p>
+              <p id="exPlain_cert_only" class="intro hidden">Based on your selection, we will issue a standard certificate of insurance showing policy limits and dates only, and it will not include any additional insureds.</p>
 
               <p id="exPlain_ai" class="intro hidden">
-                Additional Insured status ensures the certificate holder is named on your policy as required by contract.
+                Additional Insured status ensures the certificate holder is added to your policy as required by contract. Selecting this option adds the contractor to your policy and allows them to share your liability limits. Please make sure your policy has adequate limits in the event of a claim.
               </p>
 
               <p id="exPlain_loss" class="intro hidden">
@@ -75,18 +75,11 @@
                 <div class="section-title">Purpose of Request</div>
                 <select id="purposeSelect" name="purposeSelect" class="answer" aria-describedby="purposeHelp">
                   <option value="">— Select purpose —</option>
-                  <option>Facility Use Agreement</option>
+                  <option>Event Venue</option>
                   <option>Grant Requirement</option>
-                  <option>Vendor Requirement</option>
                   <option>Contract Requirement</option>
                   <option>Equipment Lease</option>
-                  <option>Program or Service Partnership</option>
-                  <option>Event or Activity</option>
-                  <option>Independent Contractor Agreement</option>
-                  <option>Building Lease / Property Use</option>
-                  <option>Volunteer Program Requirement</option>
-                  <option>Governmental Agency Requirement</option>
-                  <option>Fundraising Event</option>
+                  <option>Building Lease / Property Use / Landlord Requirement</option>
                   <option value="other">Other</option>
                 </select>
                 <div id="purposeOtherWrapper" class="hidden" style="margin-top:8px;">
@@ -107,7 +100,7 @@
                 <div class="section-title">Certificate Holder Information</div>
                 <input id="holderName" name="holderName" class="answer" type="text" placeholder="Certificate Holder Name" />
                 <div style="height:8px"></div>
-                <textarea id="holderAddress" name="holderAddress" class="answer" placeholder="Mailing address or email for certificate delivery (single field)"></textarea>
+                <textarea id="holderAddress" name="holderAddress" class="answer" placeholder="Mailing address"></textarea>
                 <div style="height:8px"></div>
                 <textarea id="holderDetails" name="holderDetails" class="answer" placeholder="Additional details (optional)"></textarea>
               </div>
@@ -123,18 +116,68 @@
               </div>
         </div>
 
-        <!-- SECTION C — Uploads & Delivery -->
-        <div class="section" id="sec-uploads">
-          <div class="section-title"><span class="q-number">3.</span>Upload Documents (optional)</div>
-          <input id="uploadFiles" name="uploadFiles" class="answer" type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
-          <div class="file-input-note intro" style="margin-top:8px;">
-            To help ensure your certificate is issued in full compliance with the contract or requirements, please upload any supporting documents such as contracts, agreements, or lender instructions. Providing these documents helps prevent delays or corrections.
+        <!-- Insurance Requirements Upload Logic -->
+        <div class="section" id="secRequirementsCheck">
+          <div class="section-title">
+            <span class="q-number">3.</span>
+            Do you have a copy of your insurance requirements? <span class="required-star">*</span>
+          </div>
+
+          <div class="choice-group">
+            <label class="choice-item">
+              <input type="radio" name="hasRequirements" value="yes" required>
+              Yes
+            </label>
+            <label class="choice-item">
+              <input type="radio" name="hasRequirements" value="no" required>
+              No
+            </label>
           </div>
         </div>
 
+        <!-- Conditional Upload Section -->
+        <div class="section hidden" id="secRequirementsUpload">
+          <div class="section-title">
+            Upload Insurance Requirements <span class="required-star">*</span>
+          </div>
+
+          <input
+            id="requirementsUpload"
+            name="requirementsUpload"
+            class="answer"
+            type="file"
+            multiple
+            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+          />
+
+          <div class="intro" style="margin-top:8px;">
+            Please upload your insurance requirements. This is mandatory if you selected "Yes".
+          </div>
+        </div>
+
+        <!-- Email Adress -->
         <div class="section" id="sec-delivery">
           <div class="section-title"><span class="q-number">4.</span>Email Address for Certificate Delivery <span class="required-star">*</span></div>
           <input id="deliveryEmail" name="deliveryEmail" class="answer" type="email" placeholder="email@example.org" required aria-required="true"/>
+        </div>
+
+        <!-- Optional Portal Upload Link -->
+        <div class="section" id="secPortalLink">
+          <div class="section-title">
+            <span class="q-number">5.</span>Provide a link below if you would like us to upload a certificate to a portal (optional)
+          </div>
+
+          <input
+            id="portalUploadLink"
+            name="portalUploadLink"
+            class="answer"
+            type="url"
+            placeholder="https://portal.example.com/upload"
+          />
+
+          <div class="intro" style="margin-top:8px;">
+            If applicable, provide the portal link where the certificate should be uploaded.
+          </div>
         </div>
 
         <!-- SECTION D — SUBMIT -->
