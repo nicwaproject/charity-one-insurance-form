@@ -45,8 +45,15 @@ const lpAddress = document.getElementById("lpAddress");
 const lpDetails = document.getElementById("lpDetails");
 
 // Upload & delivery email
-const uploadFiles = document.getElementById("uploadFiles");
-const deliveryEmail = document.getElementById("deliveryEmail");
+// const uploadFiles = document.getElementById("uploadFiles");
+// const deliveryEmail = document.getElementById("deliveryEmail");
+
+const insuranceReqSelect = document.getElementById("insuranceReqSelect");
+const insuranceUploadWrapper = document.getElementById("insuranceUploadWrapper");
+const insuranceUpload = document.getElementById("insuranceUpload");
+const emailLaterMsg = document.getElementById("emailLaterMsg");
+const notReceivedMsg = document.getElementById("notReceivedMsg");
+
 
 // Preview modal
 const previewModal = document.getElementById("previewModal");
@@ -54,10 +61,7 @@ const previewBody = document.getElementById("previewBody");
 const closePreview = document.getElementById("closePreview");
 const editBtn = document.getElementById("editBtn");
 const confirmSubmitBtn = document.getElementById("confirmSubmitBtn");
-
-const requirementRadios = document.querySelectorAll("input[name='hasRequirements']");
-const secRequirementsUpload = document.getElementById("secRequirementsUpload");
-const requirementsUpload = document.getElementById("requirementsUpload");
+const deliveryEmail = document.getElementById("deliveryEmail");
 
 const portalUploadLink = document.getElementById("portalUploadLink");
 
@@ -147,7 +151,6 @@ function handleRequestTypeChange() {
     // show(secAISection);
     show(secCertHolder);
 
-    disableSection(secAISection, false);
     disableSection(secCertHolder, false);
 
     aiLegalName.required = true;
@@ -169,19 +172,28 @@ requestTypeRadios.forEach(r =>
   r.addEventListener("change", handleRequestTypeChange)
 );
 
-requirementRadios.forEach(radio => {
-  radio.addEventListener("change", () => {
-    if (radio.value === "yes" && radio.checked) {
-      secRequirementsUpload.classList.remove("hidden");
-      requirementsUpload.required = true;
-    }
 
-    if (radio.value === "no" && radio.checked) {
-      secRequirementsUpload.classList.add("hidden");
-      requirementsUpload.required = false;
-      requirementsUpload.value = "";
-    }
-  });
+insuranceReqSelect.addEventListener("change", () => {
+  const val = insuranceReqSelect.value;
+
+  // reset all
+  insuranceUploadWrapper.classList.add("hidden");
+  emailLaterMsg.classList.add("hidden");
+  notReceivedMsg.classList.add("hidden");
+  insuranceUpload.required = false;
+
+  if (val === "upload_now") {
+    insuranceUploadWrapper.classList.remove("hidden");
+    insuranceUpload.required = true; // ✅ mandatory upload
+  }
+
+  if (val === "email_later") {
+    emailLaterMsg.classList.remove("hidden");
+  }
+
+  if (val === "not_received") {
+    notReceivedMsg.classList.remove("hidden");
+  }
 });
 
 /* ---------------------------------------------------
@@ -219,11 +231,11 @@ function buildPayload() {
     lossPayeeAddress: lpAddress.value,
     lossPayeeDetails: lpDetails.value,
 
-    hasInsuranceRequirements:
-    document.querySelector("input[name='hasRequirements']:checked")?.value || "",
-
-    uploadedRequirementsFile:
-      requirementsUpload?.files?.[0]?.name || "",
+    insuranceRequirementsOption: insuranceReqSelect.value,
+    insuranceRequirementFiles:
+    insuranceUpload.files.length > 0
+    ? [...insuranceUpload.files].map(f => f.name)
+    : [],
 
     deliveryEmail: deliveryEmail.value,
 
@@ -240,8 +252,25 @@ function validateForm() {
     form.reportValidity();
     return false;
   }
+  if (!insuranceReqSelect.value) {
+  alert("Please select your insurance requirements option.");
+  insuranceReqSelect.focus();
+  return false;
+  }
+
+  if (
+    insuranceReqSelect.value === "upload_now" &&
+    insuranceUpload.files.length === 0
+  ) {
+    alert("Please upload your insurance requirements.");
+    insuranceUpload.focus();
+    return false;
+  }
+
   return true;
 }
+
+
 
 
 /* ---------------------------------------------------
@@ -289,10 +318,10 @@ function showPreview(payload) {
     addRow(rows, "Details", payload.lossPayeeDetails);
   }
 
-  addRow(rows, "Has Insurance Requirements", payload.hasInsuranceRequirements);
+  addRow(rows, "Insurance Requirements", payload.insuranceRequirementsOption);
 
-  if (payload.hasInsuranceRequirements === "yes") {
-    addRow(rows, "Uploaded Requirements File", payload.uploadedRequirementsFile);
+  if (payload.insuranceRequirementFiles.length) {
+    addRow(rows, "Uploaded Requirement Files", payload.insuranceRequirementFiles.join(", "));
   }
 
   addRow(rows, "Delivery Email", payload.deliveryEmail);

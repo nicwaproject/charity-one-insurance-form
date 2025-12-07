@@ -117,7 +117,7 @@
         </div>
 
         <!-- Insurance Requirements Upload Logic -->
-        <div class="section" id="secRequirementsCheck">
+        <!-- <div class="section" id="secRequirementsCheck">
           <div class="section-title">
             <span class="q-number">3.</span>
             Do you have a copy of your insurance requirements? <span class="required-star">*</span>
@@ -133,6 +133,37 @@
               No
             </label>
           </div>
+        </div> -->
+
+        <!-- Insurance Requirement Upload Logic 2 -->
+        <div class="section" id="secInsuranceReq">
+            <div class="section-title">
+              <span class="q-number">3.</span>
+              Do you have a copy of your insurance requirements? <span class="required-star">*</span>
+            </div>
+
+            <select id="insuranceReqSelect" class="answer" required>
+              <option value="">— Select —</option>
+              <option value="upload_now">Yes, I can upload now</option>
+              <option value="email_later">Yes, but I do not have them readily available</option>
+              <option value="not_received">No, I did not receive insurance requirements</option>
+            </select>
+
+            <!-- Upload appears ONLY when "upload_now" -->
+            <div id="insuranceUploadWrapper" class="hidden" style="margin-top:10px;">
+              <input id="insuranceUpload" type="file" class="answer" multiple>
+            </div>
+
+            <!-- Message when "email_later" -->
+            <p id="emailLaterMsg" class="intro hidden">
+              Please email the insurance requirements to
+              <strong>certificates@charityoneinsurance.com</strong> as soon as possible to avoid processing delays.
+            </p>
+
+            <!-- Message when "not_received" -->
+            <p id="notReceivedMsg" class="intro hidden">
+              We recommend that you obtain a copy of any insurance requirements to ensure that you are in compliance with your contractual agreement.
+            </p>
         </div>
 
         <!-- Conditional Upload Section -->
