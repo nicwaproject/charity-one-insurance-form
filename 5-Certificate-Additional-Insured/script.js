@@ -36,9 +36,6 @@ const holderName = document.getElementById("holderName");
 const holderAddress = document.getElementById("holderAddress");
 const holderDetails = document.getElementById("holderDetails");
 
-// Additional Insured field
-const aiLegalName = document.getElementById("aiLegalName");
-
 // Loss Payee fields
 const lpName = document.getElementById("lpName");
 const lpAddress = document.getElementById("lpAddress");
@@ -153,7 +150,6 @@ function handleRequestTypeChange() {
 
     disableSection(secCertHolder, false);
 
-    aiLegalName.required = true;
     holderName.required = true;
     holderAddress.required = true;
 
@@ -220,8 +216,6 @@ function buildPayload() {
 
     purpose: purposeSelect.value,
     purposeOther: purposeOther.value,
-
-    additionalInsuredName: aiLegalName.value,
 
     holderName: holderName.value,
     holderAddress: holderAddress.value,
@@ -300,10 +294,6 @@ function showPreview(payload) {
     if (payload.purpose === "other") {
       addRow(rows, "Other Purpose", payload.purposeOther);
     }
-  }
-
-  if (payload.requestType === "certificate_ai") {
-    addRow(rows, "Additional Insured", payload.additionalInsuredName);
   }
 
   if (payload.requestType !== "loss_payee") {
