@@ -25,12 +25,11 @@ function escapeHtml(s){ return (s==null?'':String(s)).replace(/[&<>'"]/g, c=> ({
 const CLASS_OPTIONS = [
   "8810 Clerical",
   "8742 Outside Sales",
-  "8833 Residential Care / Group Home",
-  "9101 School / Day Program",
+  "8823 Residential Care / Group Home",
+  "9101 School Staff with Driving Exposure",
   "9079 Home Support Services",
+  "9085 Residential Care for Developmentally Disabled",
   "8868 Childcare",
-  "8380 Social Workers",
-  "8824 Program Staff",
   "9050 Janitorial",
   "Not sure"
 ];
@@ -54,6 +53,18 @@ function createPayrollBlock(data = {}) {
         <option value="">— Select class code —</option>
         ${CLASS_OPTIONS.map(o => `<option ${o===data.classCode ? 'selected':''}>${o}</option>`).join('')}
       </select>
+
+      <div class="two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;">
+        <div>
+          <label class="muted-small"># of Full Time Employees <span class="required-star">*</span></label>
+          <input type="number" class="answer full-time" required>
+        </div>
+        <div>
+          <label class="muted-small"># of Part Time Employees <span class="required-star">*</span></label>
+          <input type="number" class="answer part-time" required>
+        </div>
+
+      </div>
 
       <div class="duty-wrapper hidden" style="margin-top:8px;">
         <label class="muted-small">Job duty description <span class="required-star">*</span></label>
@@ -144,13 +155,23 @@ function buildPayload(){
     const classCode = b.querySelector('.class-code-select').value || '';
     const duty = b.querySelector('.duty-input') ? b.querySelector('.duty-input').value.trim() : '';
     const payroll = b.querySelector('.payroll-input').value || '';
-    return { classCode, duty, payroll };
+    const fullTime = b.querySelector('.full-time').value || '';
+    const partTime = b.querySelector('.part-time').value || '';
+
+    return { 
+      classCode, 
+      duty, 
+      fullTimeEmployees: fullTime,
+      partTimeEmployees: partTime,
+      payroll 
+    };
   });
 
   return {
     organizationName: orgName.value.trim(),
     payrollByClass: blocks,
     additionalNotes: additionalNotes.value.trim(),
+    finalConfirmation: document.getElementById('finalConfirm').checked,
     submittedAt: new Date().toISOString()
   };
 }
@@ -197,6 +218,13 @@ function validateForm(){
     }
   }
 
+  const finalConfirm = document.getElementById('finalConfirm');
+    if (!finalConfirm.checked) {
+      alert('You must confirm the accuracy of the information.');
+      finalConfirm.focus();
+      return false;
+    }
+
   return true;
 }
 
@@ -208,11 +236,13 @@ function showPreviewModal(payload){
   payload.payrollByClass.forEach((p, i) => {
     rows.push(`
       <div class="vehicle-card">
-        <div><strong>Class #${i+1}</strong></div>
-        <div style="margin-top:6px;"><strong>Class code:</strong> ${escapeHtml(p.classCode || '(not provided)')}</div>
-        ${p.duty ? `<div><strong>Job duty:</strong> ${escapeHtml(p.duty)}</div>` : ''}
-        <div><strong>Estimated payroll:</strong> $${Number(p.payroll).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
-      </div>
+      <div><strong>Class #${i+1}</strong></div>
+      <div style="margin-top:6px;"><strong>Class code:</strong> ${escapeHtml(p.classCode || '(not provided)')}</div>
+      ${p.duty ? `<div><strong>Job duty:</strong> ${escapeHtml(p.duty)}</div>` : ''}
+      <div><strong># Full Time Employees:</strong> ${escapeHtml(p.fullTimeEmployees || '(not provided)')}</div>
+      <div><strong># Part Time Employees:</strong> ${escapeHtml(p.partTimeEmployees || '(not provided)')}</div>
+      <div><strong>Estimated payroll:</strong> $${Number(p.payroll).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
+    </div>
     `);
   });
 

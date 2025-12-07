@@ -23,7 +23,7 @@ const exLoss = document.getElementById("exPlain_loss");
 const reqCard = document.getElementById("reqCard");
 
 const secPurpose = document.getElementById("secPurpose");
-const secAISection = document.getElementById("secAdditionalInsured");
+// const secAISection = document.getElementById("secAdditionalInsured");
 const secCertHolder = document.getElementById("secCertificateHolder");
 const secLossPayee = document.getElementById("ecLossPayee");
 
@@ -95,12 +95,12 @@ function hideAllInsideCard() {
   hide(exLoss);
 
   hide(secPurpose);
-  hide(secAISection);
+  // hide(secAISection);
   hide(secCertHolder);
   hide(secLossPayee);
 
   disableSection(secPurpose, true);
-  disableSection(secAISection, true);
+  // disableSection(secAISection, true);
   disableSection(secCertHolder, true);
   disableSection(secLossPayee, true);
 
@@ -144,7 +144,7 @@ function handleRequestTypeChange() {
 
   } 
   else if (type === "certificate_ai") {
-    show(secAISection);
+    // show(secAISection);
     show(secCertHolder);
 
     disableSection(secAISection, false);
