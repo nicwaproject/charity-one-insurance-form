@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Renewal Verification Form</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+    <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="header-inner">
+      <img src="charity_one_logo.png" alt="Charity One Logo" class="logo" onerror="this.style.display='none'"/>
+    </div>
+  </header>
+
+  <div class="divider-white" aria-hidden="true"></div>
+  <div class="divider-grey" aria-hidden="true"></div>
+
+  <div class="form-title">
+    <h1 class="title">Renewal Verification Form (Annual Update Review)</h1>
+  </div>
+
+<main class="container">
+  <div class="card">
+    <form id="renewalForm" novalidate>
+
+      <!-- INTRO -->
+      <p class="intro">
+        Please complete this form only if you indicated there were changes during your Renewal Summary Review.
+        This form allows us to provide accurate information to the insurance carrier and ensure your renewal is processed correctly.
+      </p>
+
+      <!-- PROGRESS -->
+<div class="step-progress">
+  <div class="step active" data-step="1">Step 1</div>
+  <div class="step" data-step="2">Step 2</div>
+  <div class="step" data-step="3">Step 3</div>
+</div>
+
+<!-- ================= STEP 1 ================= -->
+<div class="form-step active" data-step="1" id="step1">
+
+  <div class="section">
+    <div class="section-title">1. Organization Information</div>
+    <input id="orgName" class="answer" placeholder="Organization Name *" required>
+    <input id="contactName" class="answer" placeholder="Primary Contact Name *" required>
+    <input id="contactEmail" class="answer" type="email" placeholder="Primary Contact Email *" required>
+    <input id="contactPhone" class="answer" placeholder="Phone (optional)">
+  </div>
+
+  <div class="section">
+    <div class="section-title">2. Operational & Program Changes</div>
+    <p class="intro">Have your operations, programs, or services changed in the last year?</p>
+    <label class="choice-item"><input type="radio" name="opsChange" value="yes" required> Yes</label>
+    <label class="choice-item"><input type="radio" name="opsChange" value="no"> No</label>
+
+    <textarea id="opsDesc" class="answer hidden"
+      placeholder="New program added, service discontinued, new populations served, hours expanded."></textarea>
+  </div>
+
+  <div class="section">
+    <div class="section-title">3. Exposure & Activity Changes</div>
+    <p class="intro">Examples: events, outreach, youth programs, transportation of clients.</p>
+    <label class="choice-item"><input type="radio" name="exposureChange" value="yes" required> Yes</label>
+    <label class="choice-item"><input type="radio" name="exposureChange" value="no"> No</label>
+
+    <textarea id="exposureDesc" class="answer hidden"
+      placeholder="Describe any exposure or activity changes."></textarea>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn" id="nextStep1">Next →</button>
+  </div>
+
+</div>
+
+<!-- ================= STEP 2 ================= -->
+<div class="form-step hidden" data-step="2" id="step2">
+
+  <div class="section">
+    <div class="section-title">4. Location & Property Changes</div>
+    <label class="choice-item"><input type="radio" name="locationChange" value="yes" required> Yes</label>
+    <label class="choice-item"><input type="radio" name="locationChange" value="no"> No</label>
+
+    <textarea id="locationDesc" class="answer hidden"
+      placeholder="Describe your location changes."></textarea>
+  </div>
+
+  <div class="section">
+    <div class="section-title">5. Vehicle & Transportation Changes</div>
+    <label class="choice-item"><input type="radio" name="vehicleChange" value="yes" required> Yes</label>
+    <label class="choice-item"><input type="radio" name="vehicleChange" value="no"> No</label>
+
+    <textarea id="vehicleDesc" class="answer hidden"
+      placeholder="Describe any vehicle changes."></textarea>
+  </div>
+
+  <div class="section">
+    <div class="section-title">6. Staffing, Payroll & Volunteer Changes</div>
+    <label class="choice-item"><input type="radio" name="staffChange" value="yes" required> Yes</label>
+    <label class="choice-item"><input type="radio" name="staffChange" value="no"> No</label>
+
+    <textarea id="staffDesc" class="answer hidden"
+      placeholder="Describe staffing changes."></textarea>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn secondary" id="backStep2">← Back</button>
+    <button type="button" class="btn" id="nextStep2">Next →</button>
+  </div>
+
+</div>
+
+<!-- ================= STEP 3 ================= -->
+<div class="form-step hidden" data-step="3" id="step3">
+
+  <div class="section">
+    <label class="choice-item">
+      <input type="checkbox" id="finalConfirm" required>
+      I confirm the information provided is accurate and complete.
+    </label>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn secondary" id="backStep3">← Back</button>
+    <button type="button" class="btn secondary" id="previewBtn">Preview</button>
+    <button type="submit" class="btn">Submit</button>
+  </div>
+
+</div>
+
+      <div id="statusMsg" class="message hidden"></div>
+
+    </form>
+  </div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
