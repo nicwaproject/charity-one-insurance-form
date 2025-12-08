@@ -133,7 +133,7 @@ html,body {
     font-family: var(--helvetica-font);
     color: var(--dark-blue);
     font-weight:600;
-    font-size: 15px;
+    font-size: 16px;
     margin-bottom: 16px;
 }
 
@@ -144,8 +144,12 @@ html,body {
     color: var(--dark-blue);
 }
 
+.sub-section {
+    margin: 20px 0 10px 0;
+}
+
 .sub-section-title {
-    font-size: 13px; 
+    font-size: 14.5px; 
     font-weight: 600;
     margin: 10px 0;
 }
@@ -239,7 +243,10 @@ label.question {
     border-radius:4px;
 } 
 
- .muted-small{font-size:13px;color:var(--muted);}
+.muted-small {
+    font-size:13px;
+    color: var(--muted);
+}
 
 summary {
     margin: 6px 0;
@@ -359,6 +366,12 @@ textarea {
 
 .form-step .actions .btn.secondary {
   flex: 0.8;
+}
+
+.button-actions {
+    display: flex;
+    gap:10px;
+    margin-top:8px;
 }
 
 /* ============================

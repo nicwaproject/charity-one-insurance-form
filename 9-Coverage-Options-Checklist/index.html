@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Coverage Options Checklist</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+        <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="header-inner">
+      <img src="charity_one_logo.png" alt="Charity One Logo" class="logo" onerror="this.style.display='none'"/>
+    </div>
+  </header>
+
+  <div class="divider-white" aria-hidden="true"></div>
+  <div class="divider-grey" aria-hidden="true"></div>
+    <div class="form-title">
+      <h1 class="title">Coverage Options Checklist</h1>
+    </div>
+
+
+<main class="container">
+  <div class="card">
+
+    <p class="intro"><strong>Insurance expertise for nonprofits and social service organizations since 2002.</strong></p>
+
+    <p class="intro">
+      Charity One Insurance Agency is a boutique brokerage that focuses on nonprofits and social service organizations, helping leaders protect their mission with experienced guidance and thoughtful coverage.
+    </p>
+
+    <p class="intro">
+      This short checklist is designed for nonprofit and social service organizations. It helps you quickly identify the coverage areas you are interested in so we can design a quote or coverage review that fits your programs and budget.
+    </p>
+
+    <p class="intro">
+      For executive directors and leadership: Part of your role is to help protect your board of directors, staff, volunteers, and programs with the right insurance coverages, including Directors and Officers Liability (D&O).
+    </p>
+
+    <p class="intro"><strong>Please select the coverages you would like Charity One Insurance Agency to quote or review for your organization.</strong></p>
+
+    <form id="coverageForm" novalidate>
+
+      <!-- ================= SECTION A ================= -->
+      <div class="section">
+        <div class="section-title">Coverage options you are interested in</div>
+
+        <!-- Core Coverages -->
+         <div class="sub-section">
+            <div class="sub-section-title">Core Coverages</div>
+            <label class="choice-item"><input type="checkbox" value="Directors and Officers Liability (D&O)"> Directors and Officers Liability (D&O)</label>
+            <label class="choice-item"><input type="checkbox" value="General Liability (GL)"> General Liability (GL)</label>
+            <label class="choice-item"><input type="checkbox" value="Professional Liability (PL)"> Professional Liability (PL)</label>
+            <label class="choice-item"><input type="checkbox" value="Workers Compensation"> Workers Compensation</label>
+            <label class="choice-item"><input type="checkbox" value="Abuse and Molestation"> Abuse and Molestation</label>
+            <label class="choice-item"><input type="checkbox" value="Automobile Liability (Owned and HNOA)"> Automobile Liability (Owned and HNOA)</label>
+            <label class="choice-item"><input type="checkbox" value="Property Coverage"> Property Coverage</label>
+            <label class="choice-item"><input type="checkbox" value="Business Income and Extra Expense"> Business Income and Extra Expense</label>
+            <label class="choice-item"><input type="checkbox" value="Crime and Employee Dishonesty"> Crime and Employee Dishonesty</label>
+         </div>
+        
+
+        <div class="sub-section">
+            <div class="sub-section-title">Additional coverages (optional)</div>
+            <label class="choice-item"><input type="checkbox" value="Volunteer Accident"> Volunteer Accident</label>
+            <label class="choice-item"><input type="checkbox" value="Special Event Liability Coverage"> Special Event Liability Coverage</label>
+            <label class="choice-item"><input type="checkbox" value="Cyber Liability"> Cyber Liability</label>
+            <label class="choice-item"><input type="checkbox" value="Umbrella and Excess Liability"> Umbrella and Excess Liability</label>
+        </div>
+      </div>
+
+      <!-- ================= SECTION B ================= -->
+      <div class="section">
+        <div class="section-title">What are you looking for today? <span class="required-star">*</span></div>
+        <select id="helpType" class="answer" required>
+          <option value="">— Select —</option>
+          <option value="New quote">New quote</option>
+          <option value="Renewal review of existing policies">Renewal review of existing policies</option>
+          <option value="General questions about nonprofit insurance">General questions about nonprofit insurance</option>
+        </select>
+      </div>
+
+      <!-- ================= SECTION C ================= -->
+      <div class="section">
+        <div class="section-title">Contact Information</div>
+        <input id="contactName" class="answer" placeholder="First and last name *" required>
+        <input id="contactEmail" type="email" class="answer" placeholder="Best email for follow up *" required>
+        <input id="contactPhone" class="answer" placeholder="Best number to reach you (optional)">
+        <input id="orgWebsite" class="answer" placeholder="Website address (optional)">
+      </div>
+
+      <!-- ================= SECTION D ================= -->
+      <div class="section">
+        <div class="section-title">Organization Information</div>
+        <input id="orgName" class="answer" placeholder="Organization name (optional)">
+      </div>
+
+      <!-- ================= SECTION E ================= -->
+      <div class="section">
+        <div class="section-title">Additional Notes</div>
+        <textarea id="additionalNotes" class="answer" placeholder="Write any notes or questions here"></textarea>
+      </div>
+
+      <!-- ================= FOOTER BOX ================= -->
+      <div class="vehicle-card">
+        <div class="sub-section-title">About Charity One Insurance Agency</div>
+        <p class="intro">
+          Charity One Insurance Agency specializes in insurance solutions for nonprofits and social service organizations. We help leaders protect their programs, staff, volunteers, facilities, and vehicles with thoughtful coverage, strong carrier relationships, and hands on service from experienced specialists.
+        </p>
+      </div>
+      <div class="actions">
+            <div class="muted-small">Fields marked <span class="required-star">*</span> are required.</div>
+
+            <div class="button-actions">
+                <button type="button" id="previewBtn" class="btn secondary">Preview</button>
+                <button type="submit" class="btn">Submit</button>
+            </div>
+
+      </div>
+
+      <div id="statusMsg" class="message hidden"></div>
+
+    </form>
+
+  </div>
+</main>
+
+<!-- PREVIEW MODAL -->
+<div id="previewModal" class="preview-modal hidden">
+  <div class="preview-dialog">
+    <div class="preview-header">
+      <h3>Preview</h3>
+      <button id="closePreview" class="preview-close">&times;</button>
+    </div>
+    <div class="preview-body" id="previewBody"></div>
+    <div class="preview-footer">
+      <button id="editBtn" class="btn secondary">Back / Edit</button>
+      <button id="confirmSubmitBtn" class="btn">Confirm & Submit</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
