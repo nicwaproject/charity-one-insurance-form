@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Certificate / Additional Insured / Loss Payee Request — Charity One</title>
+  <title>Certificate & Loss Payee Request Form — Charity One</title>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
@@ -28,7 +28,7 @@
   </div>
 
   <div class="form-title">
-    <h1 class="title">Certificate, Additional Insured, or Loss Payee Request</h1>
+    <h1 class="title">Certificate & Loss Payee Request Form</h1>
   </div>
   <!-- Header -->
 
@@ -72,7 +72,7 @@
 
               <!-- SECTION B: Purpose of Request (shown for certificate only & certificate+AI) -->
               <div class="section hidden" id="secPurpose">
-                <div class="section-title">Purpose of Request</div>
+                <div class="section-title">Purpose of Request <span class="required-star">*</span></div>
                 <select id="purposeSelect" name="purposeSelect" class="answer" aria-describedby="purposeHelp">
                   <option value="">— Select purpose —</option>
                   <option>Event Venue</option>
@@ -97,7 +97,7 @@
 
               <!-- 5 Certificate Holder Information (shown for Certificate Only & Certificate+AI) -->
               <div class="section hidden" id="secCertificateHolder" data-roles="certificate_only,certificate_ai">
-                <div class="section-title">Certificate Holder Information</div>
+                <div class="section-title">Certificate Holder Information <span class="required-star">*</span></div>
                 <input id="holderName" name="holderName" class="answer" type="text" placeholder="Certificate Holder Name" />
                 <div style="height:8px"></div>
                 <textarea id="holderAddress" name="holderAddress" class="answer" placeholder="Mailing address"></textarea>
@@ -107,7 +107,7 @@
 
               <!-- 6 Loss Payee Section (conditional) -->
               <div class="section hidden" id="ecLossPayee" data-for="loss_payee">
-                <div class="section-title">Loss Payee Information</div>
+                <div class="section-title">Loss Payee Information <span class="required-star">*</span></div>
                 <input id="lpName" name="lpName" class="answer" type="text" placeholder="Lender or Finance Company Name" />
                 <div style="height:8px"></div>
                 <textarea id="lpAddress" name="lpAddress" class="answer" placeholder="Lender mailing address or instructions (single field)"></textarea>
@@ -188,7 +188,7 @@
 
         <!-- Email Adress -->
         <div class="section" id="sec-delivery">
-          <div class="section-title"><span class="q-number">4.</span>Email Address for Certificate Delivery <span class="required-star">*</span></div>
+          <div class="section-title"><span class="q-number">4.</span>Please provide us with an email address to deliver the certificate <span class="required-star">*</span></div>
           <input id="deliveryEmail" name="deliveryEmail" class="answer" type="email" placeholder="email@example.org" required aria-required="true"/>
         </div>
 

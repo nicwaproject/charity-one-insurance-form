@@ -25,11 +25,11 @@ function escapeHtml(s){ return (s==null?'':String(s)).replace(/[&<>'"]/g, c=> ({
 const CLASS_OPTIONS = [
   "8810 Clerical",
   "8742 Outside Sales",
-  "8823 Residential Care / Group Home",
+  "8823 STRTRP/Residential Care for Children",
   "9101 School Staff with Driving Exposure",
   "9079 Home Support Services",
   "9085 Residential Care for Developmentally Disabled",
-  "8868 Childcare",
+  "8868 Schools/Teachers",
   "9050 Janitorial",
   "Not sure"
 ];

@@ -305,8 +305,13 @@ textarea {
   margin-top: 8px;
 }
 
+.radio-inline {
+    margin: 4px 0 10px 0;
+}
+
 .radio-inline label {
   margin-right: 12px;
+  font-size: 14px;
 }
 
  /* preview modal */

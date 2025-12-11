@@ -130,7 +130,7 @@ function handleRequestTypeChange() {
   if (type === "certificate_ai") show(exAI);
   if (type === "loss_payee") show(exLoss);
 
-  /* ✅ PURPOSE SEKARANG WAJIB UNTUK SEMUA TIPE */
+  /* PURPOSE — sekarang harus selective */
   show(secPurpose);
   disableSection(secPurpose, false);
   purposeSelect.required = true;

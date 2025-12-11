@@ -18,6 +18,7 @@ const contactName = document.getElementById('contactName');
 const contactEmail = document.getElementById('contactEmail');
 const contactPhone = document.getElementById('contactPhone');
 const attest = document.getElementById('attest');
+const ownershipWarning = document.getElementById('ownershipWarning');
 
 const previewBtn = document.getElementById('previewBtn');
 const previewModal = document.getElementById('previewModal');
@@ -37,12 +38,13 @@ function uniqueId(){ return 'v_' + Math.random().toString(36).slice(2,9); }
 /* Ownership / responsibility logic */
 ownedRadios.forEach(r => r.addEventListener('change', () => {
   const v = document.querySelector('input[name="ownedByOrg"]:checked')?.value;
+
   if (v === 'no') {
-    respSection.style.display = ''; // show block (was hidden by inline style)
-    show(respSection);
+    show(respSection);  // Show Q2
+    show(ownershipWarning); // 🔥 Show DMV warning
   } else {
-    // hide and clear writtenAgreement selection & info
     hide(respSection);
+    hide(ownershipWarning); // 🔥 Hide warning
     writtenAgreementRadios.forEach(rb => rb.checked = false);
     hide(respInfo);
   }
@@ -78,7 +80,7 @@ function createVehicleBlock(data = {}) {
       </div>
 
       <div style="margin-top:8px;">
-        <div class="sub-section-title">Garaging address <span class="required-star">*</span></div>
+        <div class="sub-section-title">Where is the vehicle usually parked when not in use? <span class="required-star">*</span></div>
         <input class="answer veh-street" placeholder="Street address *" value="${data.street||''}" style="margin-top:6px;"/>
         <div style="display:flex;gap:8px;margin-top:6px;">
           <input class="answer veh-city" placeholder="City *" value="${data.city||''}" style="flex:2;"/>
@@ -262,7 +264,7 @@ function validateForm() {
       return false;
     }
     if (!street || !city || !state || !zip) {
-      alert(`Please provide full garaging address (street/city/state/ZIP) for vehicle ${idx+1}.`);
+      alert(`Please provide where is the vehicle usually parked when not in use? (street/city/state/ZIP) for vehicle ${idx+1}.`);
       return false;
     }
     if (!purpose) {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Location & Address Update Form</title>
+    <title>Location Update Form</title>
         <!-- Style -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -26,7 +26,7 @@
 
     <!-- Form Title -->
     <div class="form-title">
-        <h1 class="title" for="orgName">Location & Address Update Form</h1>
+        <h1 class="title" for="orgName">Location Update Form</h1>
     </div>
 
 <div class="container">
@@ -45,10 +45,10 @@
     </div>
 
     <!-- 2 Policy Number (required) -->
-    <div class="section">
+    <!-- <div class="section">
       <label class="section-title"><span class="q-number">2.</span> Policy Number <span class="required-star">*</span></label>
       <input type="text" name="polNum" id="polNum" class="answer" type="text" required aria-required="true" placeholder="As shown on your declarations page" />
-    </div>
+    </div> -->
 
     <!-- 3 Your Name (required) -->
     <div class="section">
@@ -57,22 +57,22 @@
     </div>
 
     <!-- 4 Your Role or Title (optional) -->
-    <div class="section">
+    <!-- <div class="section">
       <label class="section-title"><span class="q-number">4.</span> Your Role or Title</label>
       <input type="text" name="role" id="role" class="answer" type="text" placeholder="Executive Director, Office Manager, Program Director" />
-    </div>
+    </div> -->
 
     <!-- 5 Your Email (required) -->
-    <div class="section">
+    <!-- <div class="section">
       <label class="section-title"><span class="q-number">5.</span> Your Email <span class="required-star">*</span></label>
       <input type="email" name="email" id="email" class="answer" type="text" required aria-required="true" placeholder="name@example.org" />
-    </div>
+    </div> -->
 
     <!-- 6 Your Phone Number (required) -->
-    <div class="section">
+    <!-- <div class="section">
       <label class="section-title"><span class="q-number">6.</span> Your Phone Number</label>
       <input type="text" name="phoneNumber" id="phoneNumber" class="answer" type="text" required aria-required="true" placeholder="Best number to reach you" />
-    </div>
+    </div> -->
 
     <!-- 7 Type of Update -->
     <div class="section">
@@ -82,6 +82,7 @@
         <label class="choice-item"><input type="radio" name="updateType" value="sqft"> Update square footage or usage</label>
         <label class="choice-item"><input type="radio" name="updateType" value="add"> Add a new location</label>
         <label class="choice-item"><input type="radio" name="updateType" value="remove"> Remove a location</label>
+        <label class="choice-item"><input type="radio" name="updateType" value="replace">Replace a location</label>
         <label class="choice-item"><input type="radio" name="updateType" value="other"> Other</label>
       </div>
       <input class="answer hidden" id="otherExplain" placeholder="Explain..." />
@@ -101,10 +102,10 @@
     </div>
 
     <!-- 9 Location ID -->
-    <div class="section">
+    <!-- <div class="section">
       <label class="section-title"><span class="q-number">9.</span> Location ID (if shown on your policy)</label>
       <input type="text" name="locId" id="locId" class="answer" type="text" placeholder="Location or building number from your policy (if available)" />
-    </div>
+    </div> -->
 
 
     <!-- 10 Correcting Address -->
@@ -126,8 +127,8 @@
     <!-- 11 Building Details (if applicable) -->
     <!--  Required when “Add a new location” is selected in Question 7-->
     <div class="section" id="buildingDetailsSection">
-      <label class="section-title"><span class="q-number">11.</span> Building Details (if applicable)</label>
-      <textarea type="text" name="buildingDetails" id="buildingDetails" class="answer" placeholder="Office use, about 2,500 sq ft, built 1989, roof updated 2020"></textarea>
+      <label class="section-title"><span class="q-number">11.</span> Building Details (Usage & Square Footage)</label>
+      <textarea type="text" name="buildingDetails" id="buildingDetails" class="answer"></textarea>
     </div>
 
     <!-- 12 Date the change should take effect (Required) -->

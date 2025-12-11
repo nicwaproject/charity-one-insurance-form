@@ -236,9 +236,13 @@ label.question {
     margin-top:8px;
     background:#fbfdff;
     border-radius:4px;
+    font-size: 14px;
 } 
 
- .muted-small{font-size:13px;color:var(--muted);}
+.muted-small {
+    font-size: 13px;
+    color:var(--muted);
+}
 
 summary {
     margin: 6px 0;
