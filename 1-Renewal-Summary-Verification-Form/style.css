@@ -184,8 +184,23 @@ textarea {
     flex-wrap:wrap;
     margin-top:8px;
 }
-  .choice-item{display:flex;align-items:center;gap:8px;background:#fff;padding:8px 10px;border-radius:6px;border:1px solid #eef3f7;cursor:pointer;}
-  .choice-item input{width:16px;height:16px;margin:0;}
+  .choice-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background:#fff;
+    padding:8px 10px;
+    border-radius:6px;
+    border:1px solid #eef3f7;
+    cursor:pointer;
+    font-size: 14px;
+}
+
+  .choice-item input {
+    width:16px;
+    height:16px;
+    margin:0;
+}
 
   .help-inline{font-size:13px;color:var(--muted);margin-top:8px;margin-bottom:8px;font-style:italic;}
 
@@ -200,7 +215,14 @@ textarea {
 
   .hidden{display:none !important;}
 
-  .message{border-left:4px solid var(--dark-blue);padding:10px 12px;margin-top:8px;background:#fbfdff;border-radius:4px;}
+  .message { 
+    font-size: 14px;
+    border-left: 4px solid var(--dark-blue);
+    padding:10px 12px;
+    margin-top:8px;
+    background:#fbfdff;
+    border-radius:4px;
+}
 
   /* preview modal */
   .preview-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(6,20,30,0.45);z-index:1200;padding:20px;}
