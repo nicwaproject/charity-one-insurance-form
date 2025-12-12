@@ -161,7 +161,6 @@ label.question {
 .choice-group { 
     display:flex; 
     flex-direction: column;
-    gap: 12px; 
     flex-wrap: wrap;
     margin-top: 8px;
 }
@@ -172,9 +171,10 @@ label.question {
     align-items:center;
     gap:8px;
     padding:8px 10px;
+    margin: 6px 0;
     border-radius:6px;
     border:1px solid #eef3f7;
-    cursor:pointer;
+    cursor: pointer;
 } 
 
 .actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px;} 

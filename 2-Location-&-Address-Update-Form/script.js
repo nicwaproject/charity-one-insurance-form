@@ -31,6 +31,12 @@ const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
 const statusMsg = document.getElementById('statusMsg');
 const form = document.getElementById('locForm');
 
+const replaceLocationSelect = document.getElementById('replaceLocationSelect');
+const insInfo = document.getElementById("insInfo");
+const insInfoRequiredStar = document.getElementById("insInfoRequiredStar");
+
+const contentsCoverageRadios = document.querySelectorAll('input[name="contentsCoverage"]');
+const contentsValue = document.getElementById('contentsValue');
 
 /* -------------------------------------------
    UTILITY
@@ -64,6 +70,50 @@ function setControlsActive(container, active = true) {
 /* updated handler for update type (Q7) */
 function handleUpdateTypeChange() {
   const val = document.querySelector('input[name="updateType"]:checked')?.value || "";
+  
+  /* Hide dropdown by default */
+  hide(replaceLocationSelect);
+  replaceLocationSelect.required = false;
+  replaceLocationSelect.disabled = true;
+
+  /* REPLACE LOCATION logic */
+  if (val === "replace") {
+    show(locationSection);
+    locationSelect.required = true;
+    locationSelect.disabled = false;
+
+    show(replaceLocationSelect);
+    replaceLocationSelect.required = true;
+    replaceLocationSelect.disabled = false;
+
+    hide(newLocationName);
+    newLocationName.required = false;
+    newLocationName.disabled = true;
+
+    setControlsActive(addressSection, false);
+    setControlsActive(buildingDetailsSection, false);
+    return;
+  }
+
+  /* -------------------------------------------
+   LOGIC — Contents Coverage (NEW QUESTION)
+-------------------------------------------- */
+contentsCoverageRadios.forEach(r => {
+  r.addEventListener("change", () => {
+    const val = document.querySelector('input[name="contentsCoverage"]:checked')?.value;
+
+    if (val === "yes") {
+      contentsValue.classList.remove("hidden");
+      contentsValue.required = true;
+      contentsValue.disabled = false;
+    } else {
+      contentsValue.classList.add("hidden");
+      contentsValue.required = false;
+      contentsValue.disabled = true;
+      contentsValue.value = "";
+    }
+  });
+});
 
   // otherExplain visibility (Other)
   if (val === "other") {
@@ -136,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 /* -------------------------------------------
-   LOGIC — Additional Insured (Q14)
+   LOGIC — Additional Insured
 -------------------------------------------- */
 addInsRadios.forEach(r => {
   r.addEventListener('change', () => {
@@ -144,9 +194,25 @@ addInsRadios.forEach(r => {
     if (val === "yes") {
       show(addInsInfoSection);
       show(addInsFileSection);
+
+      // MAKE FIELD REQUIRED
+      insInfo.required = true;
+      insInfo.setAttribute("aria-required", "true");
+
+      // SHOW REQUIRED STAR
+      insInfoRequiredStar.classList.remove("hidden");
+
     } else {
       hide(addInsInfoSection);
       hide(addInsFileSection);
+
+      // REMOVE REQUIRED STATE
+      insInfo.required = false;
+      insInfo.removeAttribute("aria-required");
+      insInfo.value = ""; // optional: clear field
+
+      // HIDE REQUIRED STAR
+      insInfoRequiredStar.classList.add("hidden");
     }
   });
 });
@@ -161,19 +227,13 @@ addInsRadios.forEach(r => {
 function buildPayload() {
   return {
     organizationName: orgName.value,
-    policyNumber: polNum.value,
     yourName: yourName.value,
-    role: role.value,
-    email: email.value,
-    phone: phoneNumber.value,
 
     updateType: document.querySelector("input[name='updateType']:checked")?.value || "",
     otherExplain: otherExplain.value,
 
     locationSelect: locationSelect.value,
     newLocationName: newLocationName.value,
-
-    locationId: locId.value,
 
     address: {
       street: strAdd.value,
@@ -217,10 +277,17 @@ function validateForm() {
  * PREVIEW MODAL (CLEAN VERSION)
  ************************************/
 
-function addPreviewRow(rows, label, value) {
-  const safe = !value
-    ? '<span style="color:#9aa5b1;font-style:italic;">(not provided)</span>'
-    : escapeHtml(String(value));
+function addPreviewRow(rows, label, value, options = {}) {
+  const { showIfEmpty = false } = options;
+
+  // hide if empty and not required to show
+  if (!showIfEmpty && (!value || value.trim() === "")) {
+    return; // SKIP → do not add the preview row
+  }
+
+  const safe = value && value.trim() !== ""
+    ? escapeHtml(String(value))
+    : '<span style="color:#9aa5b1;font-style:italic;">(not provided)</span>';
 
   rows.push(`
     <div class="preview-row">
@@ -234,11 +301,7 @@ function showPreviewModal(payload) {
   const rows = [];
 
   addPreviewRow(rows, "Organization Name", payload.organizationName);
-  addPreviewRow(rows, "Policy Number", payload.policyNumber);
   addPreviewRow(rows, "Your Name", payload.yourName);
-  addPreviewRow(rows, "Your Role or Title", payload.role);
-  addPreviewRow(rows, "Your Email", payload.email);
-  addPreviewRow(rows, "Your Phone Number", payload.phone);
 
   addPreviewRow(rows, "Type of Change", payload.updateType);
   if (payload.updateType === "other") addPreviewRow(rows, "Explanation", payload.otherExplain);
@@ -248,7 +311,6 @@ function showPreviewModal(payload) {
   }
 
   addPreviewRow(rows, "New Location Name", payload.newLocationName);
-  addPreviewRow(rows, "Location ID", payload.locationId);
 
   rows.push(`<h4 class="preview-section-title">Updated / Corrected Address</h4>`);
   addPreviewRow(rows, "Street", payload.address.street);
@@ -297,13 +359,21 @@ previewBtn.addEventListener("click", () => {
   showPreviewModal(payload);
 });
 
+closePreview.addEventListener("click", () => {
+  previewModal.classList.add("hidden");
+});
+
+editBtn.addEventListener("click", () => {
+  previewModal.classList.add("hidden");
+});
+
 /************************************
  * CONFIRM SUBMIT FROM PREVIEW
  ************************************/
 confirmSubmitBtn.addEventListener("click", () => {
   previewModal.classList.add("hidden");
 
-  locForm.dispatchEvent(new Event("submit"));
+  form.dispatchEvent(new Event("submit"));
 });
 
 
