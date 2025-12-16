@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Request Auto Quote or Add Auto — Charity One</title>
+  <title>Request Auto Quote or Add Vehicle to Policy — Charity One</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -20,7 +20,7 @@
   <div class="divider-grey" aria-hidden="true"></div>
 
   <div class="form-title">
-    <h1 class="title">Request Auto Quote or Add Auto to New Policy</h1>
+    <h1 class="title">Request Auto Quote or Add Vehicle to Policy</h1>
   </div>
 
   <main class="container">
@@ -35,7 +35,7 @@
         <div class="section-title"><span class="q-number">1.</span> What would you like to do?</div>
         <div class="choice-group">
           <label class="choice-item"><input type="radio" name="actionType" value="quote"> Request an automobile insurance quote</label>
-          <label class="choice-item"><input type="radio" name="actionType" value="add_policy"> Add automobile coverage to a new policy</label>
+          <label class="choice-item"><input type="radio" name="actionType" value="add_policy"> Add vehicle to policy</label>
         </div>
       </div>
 
@@ -58,7 +58,7 @@
 
       <!-- SECTION 4 - Vehicle Information (repeatable) -->
       <div class="section" id="vehiclesSection">
-        <div class="section-title"><span class="q-number">4.</span> Vehicle Information</div>
+        <div class="section-title"><span class="q-number">3.</span> Vehicle Information</div>
 
         <div id="vehicleList"></div>
 
@@ -68,20 +68,20 @@
 
       <!-- SECTION 5 - Optional uploads -->
       <div class="section">
-        <div class="section-title"><span class="q-number">5.</span> Optional Document Uploads</div>
+        <div class="section-title"><span class="q-number">4.</span> Optional Document Uploads</div>
         <input id="optionalDocs" name="optionalDocs" class="answer" type="file" multiple accept=".pdf,.jpg,.png,.doc,.docx" />
         <div class="intro" style="margin-top:8px;">Transportation agreements, registrations, prior declarations, loss runs (optional).</div>
       </div>
 
       <!-- SECTION 6 - Notes -->
       <div class="section">
-        <div class="section-title"><span class="q-number">6.</span> Notes / Special Information</div>
+        <div class="section-title"><span class="q-number">5.</span> Notes / Special Information</div>
         <textarea id="notes" name="notes" class="answer" placeholder="Anything special we should know (optional)"></textarea>
       </div>
 
       <!-- SECTION 7 - Contact Info -->
       <div class="section">
-        <div class="section-title"><span class="q-number">7.</span> Organization Contact Information <span class="required-star">*</span></div>
+        <div class="section-title"><span class="q-number">6.</span> Organization Contact Information <span class="required-star">*</span></div>
         <input id="contactName" name="contactName" class="answer" type="text" placeholder="Contact name" required />
         <input id="contactEmail" name="contactEmail" class="answer" type="email" placeholder="Contact email" required />
         <input id="contactPhone" name="contactPhone" class="answer" type="tel" placeholder="Contact phone" required />
@@ -89,7 +89,7 @@
 
       <!-- SECTION 8 - Attestation -->
       <div class="section">
-        <div class="section-title"><span class="q-number">8.</span> Final Attestation <span class="required-star">*</span></div>
+        <div class="section-title"><span class="q-number">7.</span> Final Attestation <span class="required-star">*</span></div>
         <label class="choice-item"><input id="attest" name="attest" type="checkbox" required /> I confirm information is accurate and the org owns the vehicle(s) or has responsibility for the automobile exposure.</label>
       </div>
 

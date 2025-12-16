@@ -9,6 +9,24 @@ const section3 = document.getElementById('sec3');
 const filesInput = document.getElementById('files');
 const statusMsg = document.getElementById('statusMsg');
 
+const financingSection = document.getElementById('secFinancing');
+const financingRadios = document.querySelectorAll('input[name="financing"]');
+const financingNoMsg = document.getElementById('financingNoMsg');
+
+
+/* VISIBILITY HELPERS */
+function show(el) {
+  if (!el) return;
+  el.classList.remove('hidden');
+  el.setAttribute('aria-hidden', 'false');
+}
+
+function hide(el) {
+  if (!el) return;
+  el.classList.add('hidden');
+  el.setAttribute('aria-hidden', 'true');
+}
+
 /* Branching logic: if reviewed=no -> show message & hide section3 */
 function updateBranching(){
   const checked = Array.from(reviewedRadios).find(r=>r.checked);
@@ -28,6 +46,40 @@ function updateBranching(){
     section3.style.display = '';
   }
 }
+
+/* Reviewed logic */
+reviewedRadios.forEach(r => {
+  r.addEventListener('change', () => {
+    const val = document.querySelector('input[name="reviewed"]:checked')?.value;
+
+    // reset financing section
+    hide(financingSection);
+    hide(financingNoMsg);
+    financingRadios.forEach(f => f.checked = false);
+
+    if (val === 'yes') {
+      hide(pleaseReviewMsg);
+      show(financingSection);
+    }
+
+    if (val === 'no') {
+      show(pleaseReviewMsg);
+    }
+  });
+});
+
+/* Financing logic */
+financingRadios.forEach(r => {
+  r.addEventListener('change', () => {
+    const val = document.querySelector('input[name="financing"]:checked')?.value;
+
+    if (val === 'no') {
+      show(financingNoMsg);
+    } else {
+      hide(financingNoMsg);
+    }
+  });
+});
 
 /* File constraints */
 filesInput.addEventListener('change', (e)=>{
@@ -58,6 +110,20 @@ function buildPayload(){
   const payload = {};
   payload.orgName = (formEl.orgName.value || '').trim();
   payload.reviewed = Array.from(reviewedRadios).find(r=>r.checked)?.value || '';
+  /* build payload */
+function buildPayload(){
+  const formEl = form;
+  const payload = {};
+  payload.orgName = (formEl.orgName.value || '').trim();
+  payload.reviewed = Array.from(reviewedRadios).find(r=>r.checked)?.value || '';
+  payload.changes = (formEl.changes?.value || '').trim();
+  payload.changeType = (formEl.changeType?.value || '').trim();
+  payload.agree = formEl.agree?.checked ? true : false;
+  payload.fullName = (formEl.fullName?.value || '').trim();
+  payload.files = Array.from(filesInput.files || []).map(f=>({name:f.name,size:f.size}));
+  payload.submittedAt = new Date().toISOString();
+  return payload;
+}
   payload.changes = (formEl.changes?.value || '').trim();
   payload.changeType = (formEl.changeType?.value || '').trim();
   payload.agree = formEl.agree?.checked ? true : false;
@@ -120,6 +186,9 @@ function showPreviewModal(payload){
   addRow('Organization Name', payload.orgName);
   addRow('Reviewed the Summary?', payload.reviewed === 'yes' ? 'Yes' : (payload.reviewed === 'no' ? 'No' : ''));
   addRow('Changes (if any)', payload.changes || 'No changes.');
+  if (payload.financingPreference) {
+    addPreviewRow(rows, "Financing arrangement requested", payload.financingPreference);
+  }
   addRow('Type of change (optional)', payload.changeType || '(not provided)');
   const filesList = (payload.files && payload.files.length) ? payload.files.map(f=>escapeHtml(f.name)).join(', ') : '(no files)';
   addRow('Uploaded files', filesList);

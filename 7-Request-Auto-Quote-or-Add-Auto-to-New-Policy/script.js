@@ -4,9 +4,6 @@ const endpointURL = ""; // demo mode
 /* CACHED DOM */
 const autoForm = document.getElementById('autoForm');
 const ownedRadios = document.querySelectorAll('input[name="ownedByOrg"]');
-const respSection = document.getElementById('respSection');
-const writtenAgreementRadios = document.querySelectorAll('input[name="writtenAgreement"]');
-const respInfo = document.getElementById('respInfo');
 
 const vehicleList = document.getElementById('vehicleList');
 const addVehicleBtn = document.getElementById('addVehicleBtn');
@@ -29,32 +26,70 @@ const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
 
 const statusMsg = document.getElementById('statusMsg');
 
+const vehiclesSection = document.getElementById('vehiclesSection');
+const optionalDocsSection = document.getElementById('optionalDocs').closest('.section');
+const notesSection = document.getElementById('notes').closest('.section');
+const contactSection = document.getElementById('contactName').closest('.section');
+const attestSection = document.getElementById('attest').closest('.section');
+
+const submitBtn = document.getElementById('submitBtn');
+
 /* UTILS */
 function show(el){ if(!el) return; el.classList.remove('hidden'); el.style.display = ''; }
 function hide(el){ if(!el) return; el.classList.add('hidden'); el.style.display = 'none'; }
 function escapeHtml(s){ return (s===null||s===undefined)?'':String(s).replace(/[&<>'"]/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;',"\"":"&quot;","'":"&#39;"}[c])); }
 function uniqueId(){ return 'v_' + Math.random().toString(36).slice(2,9); }
 
-/* Ownership / responsibility logic */
-ownedRadios.forEach(r => r.addEventListener('change', () => {
-  const v = document.querySelector('input[name="ownedByOrg"]:checked')?.value;
+function setSectionDisabled(section, disabled = true) {
+  if (!section) return;
+  section.querySelectorAll('input, select, textarea').forEach(el => {
+    el.disabled = disabled;
+  });
+}
 
-  if (v === 'no') {
-    show(respSection);  // Show Q2
-    show(ownershipWarning); // 🔥 Show DMV warning
-  } else {
-    hide(respSection);
-    hide(ownershipWarning); // 🔥 Hide warning
-    writtenAgreementRadios.forEach(rb => rb.checked = false);
-    hide(respInfo);
-  }
-}));
+ownedRadios.forEach(radio => {
+  radio.addEventListener('change', () => {
+    const val = document.querySelector('input[name="ownedByOrg"]:checked')?.value;
 
-writtenAgreementRadios.forEach(rb => rb.addEventListener('change', () => {
-  const val = document.querySelector('input[name="writtenAgreement"]:checked')?.value;
-  if (val === 'no' || val === 'unsure') show(respInfo);
-  else hide(respInfo);
-}));
+    if (val === 'no') {
+      show(ownershipWarning);
+
+      setSectionDisabled(vehiclesSection, true);
+      setSectionDisabled(optionalDocsSection, true);
+      setSectionDisabled(notesSection, true);
+      setSectionDisabled(contactSection, true);
+      setSectionDisabled(attestSection, true);
+
+      addVehicleBtn.disabled = true;
+      previewBtn.disabled = true;
+      submitBtn.disabled = true;
+
+      // 🔥 LOCK OWNERSHIP CHOICE
+      ownedRadios.forEach(r => r.disabled = true);
+
+      ownershipWarning.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      hide(ownershipWarning);
+
+      setSectionDisabled(vehiclesSection, false);
+      setSectionDisabled(optionalDocsSection, false);
+      setSectionDisabled(notesSection, false);
+      setSectionDisabled(contactSection, false);
+      setSectionDisabled(attestSection, false);
+      
+      addVehicleBtn.disabled = false;
+      previewBtn.disabled = false;
+      submitBtn.disabled = false;
+
+      // 🔓 UNLOCK OWNERSHIP CHOICE
+      ownedRadios.forEach(r => r.disabled = false);
+    }
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  hide(ownershipWarning);
+});
 
 /* VEHICLE BLOCK TEMPLATE (create & handlers) */
 function createVehicleBlock(data = {}) {
@@ -236,6 +271,11 @@ function buildPayload() {
 
 /* VALIDATION */
 function validateForm() {
+  const owned = document.querySelector('input[name="ownedByOrg"]:checked')?.value;
+
+  if (owned === 'no') {
+    return false;
+  }
   // simple required checks
   if (!contactName.value.trim()) { alert('Please enter contact name.'); return false; }
   if (!contactEmail.value.trim()) { alert('Please enter contact email.'); return false; }
@@ -293,9 +333,6 @@ function showPreview(payload) {
   const rows = [];
   addPreviewRow(rows, 'Action', payload.actionType || '(not provided)');
   addPreviewRow(rows, 'Organization owns vehicle(s)?', payload.ownedByOrg || '(not provided)');
-  if (payload.ownedByOrg === 'no') {
-    addPreviewRow(rows, 'Written agreement', payload.writtenAgreement || '(not provided)');
-  }
 
   if (payload.vehicles && payload.vehicles.length) {
     payload.vehicles.forEach((v, i) => {
