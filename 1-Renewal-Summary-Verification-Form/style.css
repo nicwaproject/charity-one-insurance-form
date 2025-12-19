@@ -171,6 +171,10 @@ textarea {
     resize: vertical;
 }
 
+.answer {
+    font-size: 14px;
+}
+
 /* focus = gold accent */
 .answer:focus, textarea:focus, select:focus {
     border-color: var(--gold);

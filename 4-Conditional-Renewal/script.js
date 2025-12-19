@@ -17,8 +17,6 @@ const contactName = document.getElementById('contactName');
 const contactEmail = document.getElementById('contactEmail');
 const contactPhone = document.getElementById('contactPhone');
 
-const finalConfirm = document.getElementById('finalConfirm');
-
 const previewModal = document.getElementById('previewModal');
 const previewBody = document.getElementById('previewBody');
 const closePreview = document.getElementById('closePreview');
@@ -346,12 +344,6 @@ function collectVisibleSectionsForPreview() {
   rows.push({ label: 'Contact email', value: contactEmail?.value?.trim() || '(not provided)' });
   rows.push({ label: 'Contact phone', value: contactPhone?.value?.trim() || '(not provided)' });
 
-  // Final confirmation
-  rows.push({
-    label: 'Final confirmation',
-    value: finalConfirm && finalConfirm.checked ? 'Confirmed' : '(not confirmed)'
-  });
-
   return rows;
 }
 
@@ -459,7 +451,6 @@ function buildPayload() {
     phone: contactPhone?.value?.trim() || ''
   };
 
-  payload.finalConfirm = !!(finalConfirm && finalConfirm.checked);
   payload.submittedAt = new Date().toISOString();
 
   return payload;
@@ -511,9 +502,6 @@ function validateForm(){
     if(!document.getElementById('correctionType').value){ alert('Please select a correction type.'); return false; }
     if(!document.getElementById('updatedInfo').value.trim()){ alert('Please provide the updated information.'); return false; }
   }
-
-  // final confirmation
-  if(!finalConfirm.checked){ alert('Please confirm the information provided.'); return false; }
 
   return true;
 }

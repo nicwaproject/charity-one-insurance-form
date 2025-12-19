@@ -1,5 +1,5 @@
 /* CONFIG */
-const endpointURL = ""; // set when ready to accept submissions (POST multipart/form-data)
+const endpointURL = "https://default0ba07df5470948529c6e5a4eeb907c.dd.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bd86f6a973404632b3bccd8c51619ed8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ztAl-nf6IOROh3E8w7n2Uy7R_IehtuFxq9tBHjrcz2o";
 
 /* ELEMENTS */
 const form = document.getElementById('reviewForm');
@@ -13,7 +13,6 @@ const financingSection = document.getElementById('secFinancing');
 const financingRadios = document.querySelectorAll('input[name="financing"]');
 const financingNoMsg = document.getElementById('financingNoMsg');
 
-
 /* VISIBILITY HELPERS */
 function show(el) {
   if (!el) return;
@@ -25,6 +24,10 @@ function hide(el) {
   if (!el) return;
   el.classList.add('hidden');
   el.setAttribute('aria-hidden', 'true');
+}
+
+function setRequired(radios, required) {
+  radios.forEach(r => r.required = required);
 }
 
 /* Branching logic: if reviewed=no -> show message & hide section3 */
@@ -60,10 +63,12 @@ reviewedRadios.forEach(r => {
     if (val === 'yes') {
       hide(pleaseReviewMsg);
       show(financingSection);
+      setRequired(financingRadios, true);
     }
 
     if (val === 'no') {
       show(pleaseReviewMsg);
+      setRequired(financingRadios, false);
     }
   });
 });
@@ -104,37 +109,44 @@ filesInput.addEventListener('change', (e)=>{
 Array.from(reviewedRadios).forEach(r => r.addEventListener('change', updateBranching));
 updateBranching();
 
-/* build payload */
-function buildPayload(){
-  const formEl = form;
-  const payload = {};
-  payload.orgName = (formEl.orgName.value || '').trim();
-  payload.reviewed = Array.from(reviewedRadios).find(r=>r.checked)?.value || '';
-  /* build payload */
-function buildPayload(){
-  const formEl = form;
-  const payload = {};
-  payload.orgName = (formEl.orgName.value || '').trim();
-  payload.reviewed = Array.from(reviewedRadios).find(r=>r.checked)?.value || '';
-  payload.changes = (formEl.changes?.value || '').trim();
-  payload.changeType = (formEl.changeType?.value || '').trim();
-  payload.agree = formEl.agree?.checked ? true : false;
-  payload.fullName = (formEl.fullName?.value || '').trim();
-  payload.files = Array.from(filesInput.files || []).map(f=>({name:f.name,size:f.size}));
-  payload.submittedAt = new Date().toISOString();
-  return payload;
-}
-  payload.changes = (formEl.changes?.value || '').trim();
-  payload.changeType = (formEl.changeType?.value || '').trim();
-  payload.agree = formEl.agree?.checked ? true : false;
-  payload.fullName = (formEl.fullName?.value || '').trim();
-  payload.files = Array.from(filesInput.files || []).map(f=>({name:f.name,size:f.size}));
-  payload.submittedAt = new Date().toISOString();
-  return payload;
+//* BUILD PAYLOAD – Renewal Verification Form */
+async function buildPayload() {
+  const files = Array.from(filesInput.files || []);
+
+  const filesBase64 = await Promise.all(
+    files.map(file => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          resolve({
+            name: file.name,
+            content: reader.result.split(',')[1] // BASE64 ONLY
+          });
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    })
+  );
+
+  return {
+    orgName: form.orgName.value.trim(),
+    reviewed: document.querySelector('input[name="reviewed"]:checked')?.value || '',
+    financingPreference: document.querySelector('input[name="financing"]:checked')?.value || '',
+    changes: form.changes.value.trim(),
+    changeType: form.changeType?.value || '',
+    agree: !!form.agree.checked,
+    fullName: form.fullName.value.trim(),
+    files: filesBase64,
+    submittedAt: new Date().toISOString()
+  };
 }
 
 /* validation */
 function validateForm(quiet=false){
+  const reviewedVal = Array.from(reviewedRadios).find(r => r.checked)?.value;
+  const financingVal = document.querySelector('input[name="financing"]:checked')?.value;
+
   if(!form.orgName.value.trim()){
     if(!quiet) alert('Please enter Organization Name.');
     form.orgName.focus();
@@ -165,6 +177,12 @@ function validateForm(quiet=false){
     if(!quiet) alert('Please upload up to 5 files only.');
     return false;
   }
+
+  if (reviewedVal === 'yes' && !financingVal) {
+  alert('Please select whether you would like us to arrange financing terms.');
+  return false;
+  }
+
   return true;
 }
 
@@ -244,25 +262,85 @@ form.addEventListener('submit', async (ev)=>{
     window.scrollTo({top: statusMsg.offsetTop - 20, behavior: 'smooth'});
     return;
   }
-
+  
   try {
-    const formData = new FormData();
-    const payload = buildPayload();
-    formData.append('payload', JSON.stringify(payload));
-    const files = filesInput.files;
-    for(let i=0;i<files.length;i++){ formData.append('file' + (i+1), files[i], files[i].name); }
+  const payload = await buildPayload();
 
-    const res = await fetch(endpointURL, { method:'POST', body:formData });
-    if(!res.ok) throw new Error('Server returned ' + res.status);
-    const data = await res.json().catch(()=>({success:true}));
-    statusMsg.classList.remove('hidden'); statusMsg.setAttribute('aria-hidden','false');
-    statusMsg.style.borderLeftColor = 'green';
-    statusMsg.innerHTML = `<strong>Submitted successfully.</strong><div style="margin-top:6px;">${escapeHtml(JSON.stringify(data))}</div>`;
-    form.reset();
-    updateBranching();
+  const res = await fetch(endpointURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) throw new Error('Server returned ' + res.status);
+
+  statusMsg.classList.remove('hidden');
+  statusMsg.style.borderLeftColor = 'green';
+  statusMsg.innerHTML = `<strong>Submitted successfully.</strong>`;
+
+  form.reset();
+  updateBranching();
+
   } catch (err) {
-    statusMsg.classList.remove('hidden'); statusMsg.setAttribute('aria-hidden','false');
+    statusMsg.classList.remove('hidden');
     statusMsg.style.borderLeftColor = 'red';
     statusMsg.innerHTML = `<strong>Submission error:</strong> ${escapeHtml(err.message)}`;
   }
+
+  // try {
+  //   const formData = new FormData();
+  //   const payload = buildPayload();
+  //   formData.append('payload', JSON.stringify(payload));
+  //   const files = filesInput.files;
+  //   for(let i=0;i<files.length;i++){ formData.append('file' + (i+1), files[i], files[i].name); }
+
+  //   const res = await fetch(endpointURL, { method:'POST', body:formData });
+    
+  //   if(!res.ok) throw new Error('Server returned ' + res.status);
+  //   const data = await res.json().catch(()=>({success:true}));
+  //   statusMsg.classList.remove('hidden'); statusMsg.setAttribute('aria-hidden','false');
+  //   statusMsg.style.borderLeftColor = 'green';
+  //   statusMsg.innerHTML = `<strong>Submitted successfully.</strong><div style="margin-top:6px;">${escapeHtml(JSON.stringify(data))}</div>`;
+  //   form.reset();
+  //   updateBranching();
+  // } catch (err) {
+  //   statusMsg.classList.remove('hidden'); statusMsg.setAttribute('aria-hidden','false');
+  //   statusMsg.style.borderLeftColor = 'red';
+  //   statusMsg.innerHTML = `<strong>Submission error:</strong> ${escapeHtml(err.message)}`;
+  // }
+
+//   try {
+//   const payload = buildPayload();
+
+//   const res = await fetch(endpointURL, {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json'
+//     },
+//     body: JSON.stringify(payload)
+//   });
+
+//   if (!res.ok) {
+//     throw new Error('Server returned ' + res.status);
+//   }
+
+//   // Power Automate kadang tidak return JSON
+//   const data = await res.json().catch(() => ({ success: true }));
+
+//   statusMsg.classList.remove('hidden');
+//   statusMsg.setAttribute('aria-hidden','false');
+//   statusMsg.style.borderLeftColor = 'green';
+//   statusMsg.innerHTML = `<strong>Submitted successfully.</strong>`;
+
+//   form.reset();
+//   updateBranching();
+
+// } catch (err) {
+//   statusMsg.classList.remove('hidden');
+//   statusMsg.setAttribute('aria-hidden','false');
+//   statusMsg.style.borderLeftColor = 'red';
+//   statusMsg.innerHTML = `<strong>Submission error:</strong> ${escapeHtml(err.message)}`;
+// }
 });

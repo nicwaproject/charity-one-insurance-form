@@ -1,0 +1,54 @@
+{
+  "type": "object",
+  "properties": {
+    "orgName": {
+      "type": "string"
+    },
+    "reviewed": {
+      "type": "string",
+      "enum": ["yes", "no"]
+    },
+    "financingPreference": {
+      "type": "string",
+      "enum": ["yes", "no", ""]
+    },
+    "changes": {
+      "type": "string"
+    },
+    "changeType": {
+      "type": "string"
+    },
+    "agree": {
+      "type": "boolean"
+    },
+    "fullName": {
+      "type": "string"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number"
+          }
+        },
+        "required": ["name", "size"]
+      }
+    },
+    "submittedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "orgName",
+    "reviewed",
+    "agree",
+    "fullName",
+    "submittedAt"
+  ]
+}
