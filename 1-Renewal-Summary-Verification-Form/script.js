@@ -30,6 +30,21 @@ function setRequired(radios, required) {
   radios.forEach(r => r.required = required);
 }
 
+// Submitting Helper
+function setSubmittingState(isSubmitting) {
+  if (!submitBtn) return;
+
+  submitBtn.disabled = isSubmitting;
+  submitBtn.innerText = isSubmitting ? 'Submitting…' : 'Submit';
+  submitBtn.style.opacity = isSubmitting ? '0.7' : '1';
+  submitBtn.style.cursor = isSubmitting ? 'not-allowed' : 'pointer';
+}
+
+function scrollToStatus() {
+  if (!statusMsg) return;
+  statusMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
 /* Branching logic: if reviewed=no -> show message & hide section3 */
 function updateBranching(){
   const checked = Array.from(reviewedRadios).find(r=>r.checked);
@@ -241,6 +256,19 @@ form.addEventListener('submit', async (ev)=>{
   ev.preventDefault();
   statusMsg.classList.add('hidden'); statusMsg.setAttribute('aria-hidden','true');
 
+  // === set submitting state ===
+  setSubmittingState(true);
+
+  // === show loading message ===
+  statusMsg.classList.remove('hidden');
+  statusMsg.setAttribute('aria-hidden','false');
+  statusMsg.style.borderLeftColor = '#cbd5e1';
+  statusMsg.innerHTML = `
+    <strong>Submitting your information…</strong><br/>
+    Please wait a moment and do not close this page.
+  `;
+  scrollToStatus();
+  
   const checked = Array.from(reviewedRadios).find(r=>r.checked);
   if(!checked){
     alert('Please confirm whether you reviewed the Summary (Yes/No).');
@@ -287,60 +315,9 @@ form.addEventListener('submit', async (ev)=>{
     statusMsg.classList.remove('hidden');
     statusMsg.style.borderLeftColor = 'red';
     statusMsg.innerHTML = `<strong>Submission error:</strong> ${escapeHtml(err.message)}`;
+  } finally {
+  // restore button state
+  setSubmittingState(false);
+  scrollToStatus();
   }
-
-  // try {
-  //   const formData = new FormData();
-  //   const payload = buildPayload();
-  //   formData.append('payload', JSON.stringify(payload));
-  //   const files = filesInput.files;
-  //   for(let i=0;i<files.length;i++){ formData.append('file' + (i+1), files[i], files[i].name); }
-
-  //   const res = await fetch(endpointURL, { method:'POST', body:formData });
-    
-  //   if(!res.ok) throw new Error('Server returned ' + res.status);
-  //   const data = await res.json().catch(()=>({success:true}));
-  //   statusMsg.classList.remove('hidden'); statusMsg.setAttribute('aria-hidden','false');
-  //   statusMsg.style.borderLeftColor = 'green';
-  //   statusMsg.innerHTML = `<strong>Submitted successfully.</strong><div style="margin-top:6px;">${escapeHtml(JSON.stringify(data))}</div>`;
-  //   form.reset();
-  //   updateBranching();
-  // } catch (err) {
-  //   statusMsg.classList.remove('hidden'); statusMsg.setAttribute('aria-hidden','false');
-  //   statusMsg.style.borderLeftColor = 'red';
-  //   statusMsg.innerHTML = `<strong>Submission error:</strong> ${escapeHtml(err.message)}`;
-  // }
-
-//   try {
-//   const payload = buildPayload();
-
-//   const res = await fetch(endpointURL, {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify(payload)
-//   });
-
-//   if (!res.ok) {
-//     throw new Error('Server returned ' + res.status);
-//   }
-
-//   // Power Automate kadang tidak return JSON
-//   const data = await res.json().catch(() => ({ success: true }));
-
-//   statusMsg.classList.remove('hidden');
-//   statusMsg.setAttribute('aria-hidden','false');
-//   statusMsg.style.borderLeftColor = 'green';
-//   statusMsg.innerHTML = `<strong>Submitted successfully.</strong>`;
-
-//   form.reset();
-//   updateBranching();
-
-// } catch (err) {
-//   statusMsg.classList.remove('hidden');
-//   statusMsg.setAttribute('aria-hidden','false');
-//   statusMsg.style.borderLeftColor = 'red';
-//   statusMsg.innerHTML = `<strong>Submission error:</strong> ${escapeHtml(err.message)}`;
-// }
 });
