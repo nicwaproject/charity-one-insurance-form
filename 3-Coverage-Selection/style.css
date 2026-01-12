@@ -224,6 +224,23 @@ label.question {
   .preview-value{flex:1;color:var(--muted);white-space:pre-wrap;}
   .preview-footer{padding:12px 16px;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid rgba(0,0,0,0.04);background:#fbfdff;}
 
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 @media (max-width:520px){
     :root { 
         --max-width:92vw; 

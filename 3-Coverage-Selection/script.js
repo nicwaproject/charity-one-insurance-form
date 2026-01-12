@@ -1,5 +1,5 @@
 /* CONFIG */
-const endpointURL = ""; // your endpoint
+const endpointURL = "https://default0ba07df5470948529c6e5a4eeb907c.dd.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/77ff9ceb3c38478ea9d2abcf34b8cecf/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=rMK155bqgZSmjSanSFQlZiap31_jMw-vdsXUl5oUcLI"; // your endpoint
 
 /* -----------------------------
    EXPAND / COLLAPSE COVERAGE BOXES
@@ -11,6 +11,24 @@ document.querySelectorAll(".coverage-toggle").forEach(toggle => {
     toggle.checked ? target.classList.remove("hidden") : target.classList.add("hidden");
   });
 });
+
+const submitBtn = confirmSubmitBtn;
+
+function setSubmitting(isSubmitting) {
+  if (!submitBtn) return;
+
+  if (isSubmitting) {
+    submitBtn.disabled = true;
+    submitBtn.dataset.originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = `
+      <span class="spinner"></span>
+      Submitting...
+    `;
+  } else {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = submitBtn.dataset.originalText || "Submit";
+  }
+}
 
 /* -----------------------------
    PREVIEW MODAL (same behavior as previous forms)
@@ -135,17 +153,9 @@ document.getElementById('coverageForm').addEventListener('submit', ev => {
 /* Confirm submit (from preview modal) */
 confirmSubmitBtn.addEventListener("click", async () => {
   closePreviewModal();
+  setSubmitting(true);
 
   const payload = buildPayload();
-
-  if (!endpointURL) {
-    statusMsg.innerHTML = `
-      <strong>No endpoint configured.</strong>
-      <pre style="white-space:pre-wrap;">${escapeHtml(JSON.stringify(payload, null, 2))}</pre>
-    `;
-    statusMsg.classList.remove("hidden");
-    return;
-  }
 
   try {
     const res = await fetch(endpointURL, {
@@ -164,5 +174,8 @@ confirmSubmitBtn.addEventListener("click", async () => {
     statusMsg.innerHTML = `<strong>Submission failed:</strong> ${err.message}`;
     statusMsg.style.borderLeftColor = "var(--red)";
     statusMsg.classList.remove("hidden");
+  } finally {
+    setSubmitting(false);
+    window.scrollTo({ top: statusMsg.offsetTop - 20, behavior: 'smooth' });
   }
 });
