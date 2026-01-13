@@ -8,15 +8,16 @@ const endpointURL = "https://default0ba07df5470948529c6e5a4eeb907c.dd.environmen
 ================================= */
 const form = document.getElementById('reviewForm');
 const submitBtn = document.getElementById('submitBtn');
-const reviewedRadios = form.elements['reviewed'];
-const filesInput = document.getElementById('files');
 const statusMsg = document.getElementById('statusMsg');
 
+const reviewedRadios = form.elements['reviewed'];
 const financingSection = document.getElementById('secFinancing');
 const financingRadios = document.querySelectorAll('input[name="financing"]');
 const financingNoMsg = document.getElementById('financingNoMsg');
+
 const pleaseReviewMsg = document.getElementById('pleaseReviewMsg');
 const section3 = document.getElementById('sec3');
+const filesInput = document.getElementById('files');
 
 /* ===============================
    UI HELPERS
@@ -34,14 +35,11 @@ function hide(el){
 }
 
 function scrollToStatus(){
-  if(statusMsg){
-    statusMsg.scrollIntoView({ behavior:'smooth', block:'center' });
-  }
+  statusMsg?.scrollIntoView({ behavior:'smooth', block:'center' });
 }
 
 function setSubmittingState(isSubmitting){
   if(!submitBtn) return;
-
   submitBtn.disabled = isSubmitting;
   submitBtn.innerText = isSubmitting ? 'Submitting…' : 'Submit';
   submitBtn.style.opacity = isSubmitting ? '0.7' : '1';
@@ -49,23 +47,33 @@ function setSubmittingState(isSubmitting){
 }
 
 /* ===============================
-   BRANCHING LOGIC
+   REVIEWED → FINANCING LOGIC (FIXED)
 ================================= */
 function updateBranching(){
-  const checked = Array.from(reviewedRadios).find(r=>r.checked);
-  if(!checked){
+  const reviewedVal =
+    document.querySelector('input[name="reviewed"]:checked')?.value;
+
+  // reset financing state
+  hide(financingSection);
+  hide(financingNoMsg);
+  financingRadios.forEach(r => r.checked = false);
+
+  if(!reviewedVal){
     hide(pleaseReviewMsg);
     section3.style.display = '';
     return;
   }
 
-  if(checked.value === 'no'){
+  if(reviewedVal === 'no'){
     show(pleaseReviewMsg);
     section3.style.display = 'none';
-  } else {
-    hide(pleaseReviewMsg);
-    section3.style.display = '';
+    return;
   }
+
+  // reviewed === yes
+  hide(pleaseReviewMsg);
+  section3.style.display = '';
+  show(financingSection); // ✅ THIS WAS MISSING BEFORE
 }
 
 Array.from(reviewedRadios).forEach(r =>
@@ -74,11 +82,12 @@ Array.from(reviewedRadios).forEach(r =>
 updateBranching();
 
 /* ===============================
-   FINANCING LOGIC
+   FINANCING RADIO LOGIC
 ================================= */
 financingRadios.forEach(r=>{
   r.addEventListener('change', ()=>{
-    const val = document.querySelector('input[name="financing"]:checked')?.value;
+    const val =
+      document.querySelector('input[name="financing"]:checked')?.value;
     val === 'no' ? show(financingNoMsg) : hide(financingNoMsg);
   });
 });
@@ -106,7 +115,8 @@ async function buildPayload(){
   return {
     orgName: form.orgName.value.trim(),
     reviewed: document.querySelector('input[name="reviewed"]:checked')?.value || '',
-    financingPreference: document.querySelector('input[name="financing"]:checked')?.value || '',
+    financingPreference:
+      document.querySelector('input[name="financing"]:checked')?.value || '',
     changes: form.changes.value.trim(),
     changeType: form.changeType?.value || '',
     agree: !!form.agree.checked,
@@ -120,8 +130,10 @@ async function buildPayload(){
    VALIDATION
 ================================= */
 function validateForm(){
-  const reviewedVal = document.querySelector('input[name="reviewed"]:checked')?.value;
-  const financingVal = document.querySelector('input[name="financing"]:checked')?.value;
+  const reviewedVal =
+    document.querySelector('input[name="reviewed"]:checked')?.value;
+  const financingVal =
+    document.querySelector('input[name="financing"]:checked')?.value;
 
   if(!form.orgName.value.trim()){
     alert('Please enter Organization Name.');
@@ -175,10 +187,10 @@ function escapeHtml(str){
 function showPreviewModal(payload){
   previewBody.innerHTML = `
     <div class="preview-row"><b>Organization:</b> ${escapeHtml(payload.orgName)}</div>
-    <div class="preview-row"><b>Reviewed:</b> ${payload.reviewed}</div>
-    <div class="preview-row"><b>Financing:</b> ${payload.financingPreference || 'N/A'}</div>
+    <div class="preview-row"><b>Reviewed Summary:</b> ${payload.reviewed}</div>
+    <div class="preview-row"><b>Financing Preference:</b> ${payload.financingPreference || 'N/A'}</div>
     <div class="preview-row"><b>Changes:</b> ${escapeHtml(payload.changes)}</div>
-    <div class="preview-row"><b>Submitted by:</b> ${escapeHtml(payload.fullName)}</div>
+    <div class="preview-row"><b>Submitted By:</b> ${escapeHtml(payload.fullName)}</div>
   `;
   previewModal.classList.remove('hidden');
 }
@@ -204,17 +216,13 @@ confirmSubmitBtn.addEventListener('click', ()=>{
 form.addEventListener('submit', async ev=>{
   ev.preventDefault();
 
-  setSubmittingState(true);
+  if(!validateForm()) return;
 
+  setSubmittingState(true);
   show(statusMsg);
   statusMsg.style.borderLeftColor = '#cbd5e1';
-  statusMsg.innerHTML = `<strong>Submitting…</strong><br>Please wait.`;
+  statusMsg.innerHTML = `<strong>Submitting…</strong><br/>Please wait.`;
   scrollToStatus();
-
-  if(!validateForm()){
-    setSubmittingState(false);
-    return;
-  }
 
   try {
     const payload = await buildPayload();
