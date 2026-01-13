@@ -221,7 +221,10 @@ form.addEventListener('submit', async ev=>{
   setSubmittingState(true);
   show(statusMsg);
   statusMsg.style.borderLeftColor = '#cbd5e1';
-  statusMsg.innerHTML = `<strong>Submitting…</strong><br/>Please wait.`;
+  statusMsg.innerHTML = `
+  <strong>Submitting your request…</strong><br/>
+    Please wait and do not close this page.
+  `;
   scrollToStatus();
 
   try {

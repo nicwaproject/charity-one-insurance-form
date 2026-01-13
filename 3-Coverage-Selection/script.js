@@ -103,7 +103,10 @@ async function handleSubmit() {
   setSubmitting(true);
   statusMsg.classList.remove("hidden");
   statusMsg.style.borderLeftColor = "var(--blue)";
-  statusMsg.innerHTML = `<strong>Submitting… Please wait.</strong>`;
+  statusMsg.innerHTML = `
+    <strong>Submitting your request…</strong><br/>
+    Please wait and do not close this page.
+  `;
 
   try {
     const res = await fetch(endpointURL, {
@@ -115,7 +118,9 @@ async function handleSubmit() {
     if (!res.ok) throw new Error("Server error");
 
     statusMsg.style.borderLeftColor = "var(--green)";
-    statusMsg.innerHTML = `<strong>Submitted successfully.</strong>`;
+    statusMsg.innerHTML = `
+    <strong>Submitted successfully.</strong>
+    `;
     form.reset();
 
   } catch (err) {

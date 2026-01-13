@@ -94,6 +94,24 @@ function scrollToStatus() {
   statusMsg.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
+function filesToBase64(fileInput) {
+  const files = Array.from(fileInput?.files || []);
+
+  return Promise.all(
+    files.map(file =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve({
+          name: file.name,
+          content: reader.result.split(',')[1] // base64 only
+        });
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      })
+    )
+  );
+}
+
 
 /* ---------------------------------------------------
    RESET CARD
@@ -186,8 +204,18 @@ insuranceReqSelect.addEventListener("change", () => {
 /* ---------------------------------------------------
    BUILD PAYLOAD
 ---------------------------------------------------- */
-function buildPayload() {
-  const reqType = document.querySelector("input[name='requestType']:checked")?.value;
+async function buildPayload() {
+  const reqType =
+    document.querySelector("input[name='requestType']:checked")?.value;
+
+  let insuranceFiles = [];
+
+  if (
+    insuranceReqSelect.value === "upload_now" &&
+    insuranceUpload.files.length
+  ) {
+    insuranceFiles = await filesToBase64(insuranceUpload);
+  }
 
   return {
     organizationName: orgName?.value || "",
@@ -205,13 +233,10 @@ function buildPayload() {
     lossPayeeDetails: lpDetails.value,
 
     insuranceRequirementsOption: insuranceReqSelect.value,
-    insuranceRequirementFiles:
-      insuranceUpload.files.length
-        ? [...insuranceUpload.files].map(f => f.name)
-        : [],
+    insuranceRequirementFiles: insuranceFiles, // ✅ base64 array
 
     deliveryEmail: deliveryEmail.value,
-    portalUploadLink: portalUploadLink?.value || portalUploadLink?.href || "",
+    portalUploadLink: portalUploadLink?.value || "",
 
     submittedAt: new Date().toISOString()
   };
@@ -239,6 +264,13 @@ function validateForm() {
   ) {
     alert("Please upload your insurance requirements.");
     return false;
+  }
+
+  for (const file of insuranceUpload.files) {
+  if (file.size > 8 * 1024 * 1024) {
+    alert(`"${file.name}" exceeds 8MB.`);
+    return false;
+  }
   }
 
   if (!form.checkValidity()) {
@@ -291,9 +323,10 @@ function showPreview(payload) {
   show(previewModal);
 }
 
-previewBtn.addEventListener("click", () => {
+previewBtn.addEventListener("click", async () => {
   if (!validateForm()) return;
-  showPreview(buildPayload());
+  const payload = await buildPayload();
+  showPreview(payload);
 });
 
 closePreview.addEventListener("click", () => hide(previewModal));
@@ -321,7 +354,7 @@ form.addEventListener("submit", async (e) => {
   show(statusMsg);
   scrollToStatus();
 
-  const payload = buildPayload();
+  const payload = await buildPayload();
 
   if (!endpointURL) {
     statusMsg.innerHTML = `
