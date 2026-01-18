@@ -48,8 +48,19 @@ function showPreviewModal(payload) {
   }
 
   addRow("Organization Name", payload.orgName || "(not provided)");
-  addRow("Core Coverages", payload.coreCoverages.join(", ") || "(none)");
-  addRow("Additional Coverages", payload.additionalCoverages.join(", ") || "(none)");
+  addRow("Contact Name", payload.contactName || "(not provided)");
+  addRow("Email Address", payload.emailAddress || "(not provided)");
+
+  addRow(
+    "Core Coverages",
+    payload.coreCoverages.length ? payload.coreCoverages.join(", ") : "(none)"
+  );
+
+  addRow(
+    "Additional Coverages",
+    payload.additionalCoverages.length ? payload.additionalCoverages.join(", ") : "(none)"
+  );
+
   addRow("Notes", payload.notes || "(none)");
   addRow("Submitted At", payload.submittedAt);
 
@@ -71,17 +82,23 @@ editBtn.addEventListener("click", closePreviewModal);
 function buildPayload() {
   return {
     orgName: document.getElementById("orgName")?.value.trim() || "",
+    contactName: document.getElementById("contactName")?.value.trim() || "",
+    emailAddress: document.getElementById("emailAddress")?.value.trim() || "",
+
     notes: document.getElementById("notes")?.value.trim() || "",
+
     coreCoverages: Array.from(
       document.querySelectorAll("#coreSection .coverage-toggle")
     )
       .filter(cb => cb.checked)
       .map(cb => cb.dataset.label),
+
     additionalCoverages: Array.from(
       document.querySelectorAll("#additionalSection .coverage-toggle")
     )
       .filter(cb => cb.checked)
       .map(cb => cb.dataset.label),
+
     submittedAt: new Date().toISOString()
   };
 }
