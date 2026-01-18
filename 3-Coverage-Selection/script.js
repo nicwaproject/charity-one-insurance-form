@@ -20,6 +20,10 @@ document.querySelectorAll(".coverage-toggle").forEach(toggle => {
   });
 });
 
+function scrollToStatus(){
+  statusMsg?.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
 /* -----------------------------
    PREVIEW MODAL
 --------------------------------*/
@@ -108,7 +112,9 @@ function buildPayload() {
 --------------------------------*/
 function setSubmitting(isSubmitting) {
   submitBtn.disabled = isSubmitting;
-  submitBtn.textContent = isSubmitting ? "Submitting…" : "Submit";
+  submitBtn.innerText = isSubmitting ? 'Submitting…' : 'Submit';
+  submitBtn.style.opacity = isSubmitting ? '0.7' : '1';
+  submitBtn.style.cursor = isSubmitting ? 'not-allowed' : 'pointer';
 }
 
 /* -----------------------------
@@ -119,11 +125,13 @@ async function handleSubmit() {
 
   setSubmitting(true);
   statusMsg.classList.remove("hidden");
-  statusMsg.style.borderLeftColor = "var(--blue)";
+  statusMsg.style.borderLeftColor = "#cbd5e1";
   statusMsg.innerHTML = `
     <strong>Submitting your request…</strong><br/>
     Please wait and do not close this page.
   `;
+
+  scrollToStatus();
 
   try {
     const res = await fetch(endpointURL, {
@@ -134,14 +142,14 @@ async function handleSubmit() {
 
     if (!res.ok) throw new Error("Server error");
 
-    statusMsg.style.borderLeftColor = "var(--green)";
+    statusMsg.style.borderLeftColor = "green";
     statusMsg.innerHTML = `
     <strong>Submitted successfully.</strong>
     `;
     form.reset();
 
   } catch (err) {
-    statusMsg.style.borderLeftColor = "var(--red)";
+    statusMsg.style.borderLeftColor = "red";
     statusMsg.innerHTML = `<strong>Submission failed:</strong> ${err.message}`;
   } finally {
     setSubmitting(false);
@@ -149,6 +157,7 @@ async function handleSubmit() {
       top: statusMsg.offsetTop - 20,
       behavior: "smooth"
     });
+    scrollToStatus();
   }
 }
 
@@ -167,5 +176,5 @@ previewBtn.addEventListener("click", ev => {
 
 confirmSubmitBtn.addEventListener("click", () => {
   closePreviewModal();
-  handleSubmit();
+  form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
 });
