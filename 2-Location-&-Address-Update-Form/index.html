@@ -7,6 +7,7 @@
         <!-- Style -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
 </head>
 
 <body>
@@ -112,7 +113,7 @@
         <option value="loc6">Location 6</option>
         <option value="new">Add a new location</option>
       </select>
-      <input id="newLocationName" name="newLocationName" class="answer hidden" placeholder="New location name" />
+      <input id="newLocationName" name="newLocationName" class="answer hidden" placeholder="New location name" disabled/>
       <p class="intro">You may refer to the attached location list for the exact name or address.</p>
     </div>
 
@@ -143,7 +144,7 @@
     <!--  Required when “Add a new location” is selected in Question 7-->
     <div class="section" id="buildingDetailsSection">
       <label class="section-title"><span class="q-number">6.</span> Building Details (Usage & Square Footage) <span class="required-star">*</span></label>
-      <textarea type="text" name="buildingDetails" id="buildingDetails" class="answer" required aria-required="true" placeholder="Do you need coverage for the contents of this location?"></textarea>
+      <textarea type="text" name="buildingDetails" id="buildingDetails" class="answer" placeholder="Do you need coverage for the contents of this location?"></textarea>
     </div>
 
     <!-- CONTENTS COVERAGE SECTION -->
@@ -153,7 +154,7 @@
       </label>
 
       <label class="choice-item">
-        <input type="radio" name="contentsCoverage" value="yes" required>
+        <input type="radio" name="contentsCoverage" value="yes">
         Yes
       </label>
 

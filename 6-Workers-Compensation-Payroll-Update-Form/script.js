@@ -1,27 +1,54 @@
-/* CONFIG */
-const endpointURL = ""; // set when ready
+/* -------------------------------------------
+   CONFIG
+-------------------------------------------- */
+const endpointURL = "https://default0ba07df5470948529c6e5a4eeb907c.dd.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/29cd09bfb6704ad7ad837e08817eff70/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=630QdvUTuo6R0RwBvnZ3r9PgfPD2s9v0qo9KEJvBI90"; // set when ready
 
-/* ELEMENTS */
+
+/* -------------------------------------------
+   ELEMENTS
+-------------------------------------------- */
 const form = document.getElementById('payrollForm');
 const payrollList = document.getElementById('payrollList');
 const addPayrollBtn = document.getElementById('addPayrollBtn');
+
 const previewBtn = document.getElementById('previewBtn');
 const previewModal = document.getElementById('previewModal');
 const previewBody = document.getElementById('previewBody');
 const closePreview = document.getElementById('closePreview');
 const editBtn = document.getElementById('editBtn');
 const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
+
 const statusMsg = document.getElementById('statusMsg');
 
 const orgName = document.getElementById('orgName');
 const additionalNotes = document.getElementById('additionalNotes');
+const finalConfirm = document.getElementById('finalConfirm');
 
-/* UTILS */
+
+/* -------------------------------------------
+   UTILS
+-------------------------------------------- */
 function show(el){ el && el.classList.remove('hidden'); }
 function hide(el){ el && el.classList.add('hidden'); }
-function escapeHtml(s){ return (s==null?'':String(s)).replace(/[&<>'"]/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;',"'" :'&#39;','"':'&quot;'}[c])); }
 
-/* CLASS CODE OPTIONS (exact as requested) */
+function escapeHtml(s){
+  return (s==null?'':String(s)).replace(/[&<>'"]/g, c=> ({
+    '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'
+  }[c]));
+}
+
+function setSubmitting(isSubmitting){
+  if(!statusMsg) return;
+  if(isSubmitting){
+    statusMsg.innerHTML = `<strong>Submitting your request…</strong><br/>Please wait and do not close this page.`;
+    show(statusMsg);
+  }
+}
+
+
+/* -------------------------------------------
+   CLASS CODE OPTIONS
+-------------------------------------------- */
 const CLASS_OPTIONS = [
   "8810 Clerical",
   "8742 Outside Sales",
@@ -34,13 +61,15 @@ const CLASS_OPTIONS = [
   "Not sure"
 ];
 
-/* Create a single payroll block */
+
+/* -------------------------------------------
+   CREATE PAYROLL BLOCK
+-------------------------------------------- */
 function createPayrollBlock(data = {}) {
   const wrapper = document.createElement('div');
   wrapper.className = 'payroll-block';
   wrapper.style = 'border:1px solid var(--muted); padding:12px; margin-top:10px; border-radius:8px;';
 
-  // header with remove button and title (will renumber)
   wrapper.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;">
       <div class="sub-section-title payroll-title">Class code</div>
@@ -63,7 +92,6 @@ function createPayrollBlock(data = {}) {
           <label class="muted-small"># of Part Time Employees <span class="required-star">*</span></label>
           <input type="number" class="answer part-time" required>
         </div>
-
       </div>
 
       <div class="duty-wrapper hidden" style="margin-top:8px;">
@@ -78,19 +106,16 @@ function createPayrollBlock(data = {}) {
     </div>
   `;
 
-  // events
   const removeBtn = wrapper.querySelector('.remove-block-btn');
   const classSelect = wrapper.querySelector('.class-code-select');
   const dutyWrapper = wrapper.querySelector('.duty-wrapper');
   const dutyInput = wrapper.querySelector('.duty-input');
-  const payrollInput = wrapper.querySelector('.payroll-input');
 
-  // populate if data provided
+  // populate
   if (data.classCode) classSelect.value = data.classCode;
   if (data.duty) dutyInput.value = data.duty;
-  if (data.payroll) payrollInput.value = data.payroll;
+  if (data.payroll) wrapper.querySelector('.payroll-input').value = data.payroll;
 
-  // change handler
   classSelect.addEventListener('change', () => {
     if (classSelect.value === 'Not sure') {
       dutyWrapper.classList.remove('hidden');
@@ -110,7 +135,7 @@ function createPayrollBlock(data = {}) {
     renumberBlocks();
   });
 
-  // initial state for duty input
+  // initial state
   if (classSelect.value === 'Not sure') {
     dutyWrapper.classList.remove('hidden');
     dutyInput.required = true;
@@ -124,46 +149,49 @@ function createPayrollBlock(data = {}) {
   return wrapper;
 }
 
-/* renumber blocks titles: show "Class #n" only when >1 */
+
+/* -------------------------------------------
+   RENUMBER BLOCKS
+-------------------------------------------- */
 function renumberBlocks(){
   const items = Array.from(payrollList.querySelectorAll('.payroll-block'));
   items.forEach((it, idx) => {
     const titleEl = it.querySelector('.payroll-title');
-    if (items.length > 1) titleEl.textContent = `Class #${idx+1}`;
-    else titleEl.textContent = `Class code`;
+    titleEl.textContent = items.length > 1 ? `Class #${idx+1}` : `Class code`;
   });
 }
 
-/* add new block */
+
+/* -------------------------------------------
+   ADD BLOCK
+-------------------------------------------- */
 addPayrollBtn.addEventListener('click', () => {
   payrollList.appendChild(createPayrollBlock());
   renumberBlocks();
-  // scroll into view
-  const last = payrollList.lastElementChild;
-  last && last.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  payrollList.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 });
 
-/* start with one block */
+
+/* -------------------------------------------
+   INIT WITH ONE BLOCK
+-------------------------------------------- */
 (function init(){
   payrollList.appendChild(createPayrollBlock());
   renumberBlocks();
 })();
 
-/* Build payload from form */
+
+/* -------------------------------------------
+   BUILD PAYLOAD
+-------------------------------------------- */
 function buildPayload(){
   const blocks = Array.from(payrollList.querySelectorAll('.payroll-block')).map(b => {
-    const classCode = b.querySelector('.class-code-select').value || '';
-    const duty = b.querySelector('.duty-input') ? b.querySelector('.duty-input').value.trim() : '';
-    const payroll = b.querySelector('.payroll-input').value || '';
-    const fullTime = b.querySelector('.full-time').value || '';
-    const partTime = b.querySelector('.part-time').value || '';
-
     return { 
-      classCode, 
-      duty, 
-      fullTimeEmployees: fullTime,
-      partTimeEmployees: partTime,
-      payroll 
+      classCode: b.querySelector('.class-code-select').value || '',
+      duty: b.querySelector('.duty-input')?.value.trim() || '',
+      fullTimeEmployees: b.querySelector('.full-time').value || '',
+      partTimeEmployees: b.querySelector('.part-time').value || '',
+      payroll: b.querySelector('.payroll-input').value || ''
     };
   });
 
@@ -171,14 +199,16 @@ function buildPayload(){
     organizationName: orgName.value.trim(),
     payrollByClass: blocks,
     additionalNotes: additionalNotes.value.trim(),
-    finalConfirmation: document.getElementById('finalConfirm').checked,
+    finalConfirmation: finalConfirm.checked,
     submittedAt: new Date().toISOString()
   };
 }
 
-/* Validation */
+
+/* -------------------------------------------
+   VALIDATION
+-------------------------------------------- */
 function validateForm(){
-  // organization required
   if(!orgName.value.trim()){
     alert('Please enter Organization Name.');
     orgName.focus();
@@ -201,60 +231,63 @@ function validateForm(){
       b.querySelector('.class-code-select').focus();
       return false;
     }
+
     if(classCode === 'Not sure' && (!dutyInput || !dutyInput.value.trim())){
-      alert(`Please provide job duty description for entry #${i+1} (Not sure).`);
-      dutyInput && dutyInput.focus();
+      alert(`Please provide job duty description for entry #${i+1}.`);
+      dutyInput?.focus();
       return false;
     }
-    if(payroll === '' || payroll === null){
-      alert(`Please enter estimated payroll for entry #${i+1}.`);
-      b.querySelector('.payroll-input').focus();
-      return false;
-    }
-    if(Number(payroll) < 0){
-      alert(`Estimated payroll must be 0 or greater for entry #${i+1}.`);
+
+    if(payroll === '' || Number(payroll) < 0){
+      alert(`Please enter valid estimated payroll for entry #${i+1}.`);
       b.querySelector('.payroll-input').focus();
       return false;
     }
   }
 
-  const finalConfirm = document.getElementById('finalConfirm');
-    if (!finalConfirm.checked) {
-      alert('You must confirm the accuracy of the information.');
-      finalConfirm.focus();
-      return false;
-    }
+  if(!finalConfirm.checked){
+    alert('You must confirm the accuracy of the information.');
+    finalConfirm.focus();
+    return false;
+  }
 
   return true;
 }
 
-/* PREVIEW: build human readable rows */
+
+/* -------------------------------------------
+   PREVIEW
+-------------------------------------------- */
 function showPreviewModal(payload){
   const rows = [];
-  rows.push(`<div style="margin-bottom:8px;"><strong>Organization:</strong> ${escapeHtml(payload.organizationName || '(not provided)')}</div>`);
+  rows.push(`<div style="margin-bottom:8px;"><strong>Organization:</strong> ${escapeHtml(payload.organizationName)}</div>`);
 
   payload.payrollByClass.forEach((p, i) => {
     rows.push(`
       <div class="vehicle-card">
-      <div><strong>Class #${i+1}</strong></div>
-      <div style="margin-top:6px;"><strong>Class code:</strong> ${escapeHtml(p.classCode || '(not provided)')}</div>
-      ${p.duty ? `<div><strong>Job duty:</strong> ${escapeHtml(p.duty)}</div>` : ''}
-      <div><strong># Full Time Employees:</strong> ${escapeHtml(p.fullTimeEmployees || '(not provided)')}</div>
-      <div><strong># Part Time Employees:</strong> ${escapeHtml(p.partTimeEmployees || '(not provided)')}</div>
-      <div><strong>Estimated payroll:</strong> $${Number(p.payroll).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
-    </div>
+        <div><strong>Class #${i+1}</strong></div>
+        <div><strong>Class code:</strong> ${escapeHtml(p.classCode)}</div>
+        ${p.duty ? `<div><strong>Job duty:</strong> ${escapeHtml(p.duty)}</div>` : ''}
+        <div><strong># Full Time:</strong> ${escapeHtml(p.fullTimeEmployees)}</div>
+        <div><strong># Part Time:</strong> ${escapeHtml(p.partTimeEmployees)}</div>
+        <div><strong>Estimated payroll:</strong> $${Number(p.payroll).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+      </div>
     `);
   });
 
-  if(payload.additionalNotes) rows.push(`<div style="margin-top:12px;"><strong>Notes:</strong> ${escapeHtml(payload.additionalNotes)}</div>`);
-  rows.push(`<div style="margin-top:12px;color:#667;"><small>Submitted at ${escapeHtml(payload.submittedAt)}</small></div>`);
+  if(payload.additionalNotes){
+    rows.push(`<div style="margin-top:12px;"><strong>Notes:</strong> ${escapeHtml(payload.additionalNotes)}</div>`);
+  }
 
   previewBody.innerHTML = rows.join('');
   show(previewModal);
   closePreview.focus();
 }
 
-/* Preview handlers */
+
+/* -------------------------------------------
+   PREVIEW EVENTS
+-------------------------------------------- */
 previewBtn.addEventListener('click', (ev) => {
   ev.preventDefault();
   if(!validateForm()) return;
@@ -267,22 +300,25 @@ editBtn.addEventListener('click', ()=> hide(previewModal));
 
 confirmSubmitBtn.addEventListener('click', ()=>{
   hide(previewModal);
-  form.dispatchEvent(new Event('submit'));
+  form.requestSubmit();   // ✅ proper submit
 });
 
-/* Submit (demo) */
+
+/* -------------------------------------------
+   SUBMIT
+-------------------------------------------- */
 form.addEventListener('submit', async (ev) => {
   ev.preventDefault();
   if(!validateForm()) return;
+
+  setSubmitting(true);
 
   const payload = buildPayload();
 
   if(!endpointURL){
     statusMsg.innerHTML = `<strong>No endpoint configured.</strong>
       <pre style="white-space:pre-wrap;">${escapeHtml(JSON.stringify(payload, null, 2))}</pre>`;
-    statusMsg.classList.remove('hidden');
-    statusMsg.setAttribute('aria-hidden','false');
-    window.scrollTo({ top: statusMsg.offsetTop - 20, behavior: 'smooth' });
+    show(statusMsg);
     return;
   }
 
@@ -292,11 +328,19 @@ form.addEventListener('submit', async (ev) => {
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify(payload)
     });
+
     if(!res.ok) throw new Error('Server error');
+
     statusMsg.innerHTML = `<strong>Successfully submitted!</strong>`;
-    statusMsg.classList.remove('hidden');
+    show(statusMsg);
+
+    form.reset();
+    payrollList.innerHTML = '';
+    payrollList.appendChild(createPayrollBlock());
+    renumberBlocks();
+
   } catch(err) {
     statusMsg.innerHTML = `<strong>Submission failed:</strong> ${escapeHtml(err.message)}`;
-    statusMsg.classList.remove('hidden');
+    show(statusMsg);
   }
 });

@@ -1,218 +1,227 @@
 /* -------------------------------------------
    CONFIG
 -------------------------------------------- */
-const endpointURL = ""; // demo mode
+const endpointURL = "https://default0ba07df5470948529c6e5a4eeb907c.dd.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/9138ff43700f434db48ec80cd9e64f9c/triggers/manual/paths/invoke?api-version=1";
 
 
 /* -------------------------------------------
    ELEMENTS
 -------------------------------------------- */
+const form = document.getElementById('locForm');
+const submitBtn = document.getElementById('submitBtn');
+const statusMsg = document.getElementById('statusMsg');
+
 const updateTypeRadios = document.querySelectorAll('input[name="updateType"]');
-const locationSection = document.getElementById('locationSelect').closest('.section');
+
+const locationSection = document.getElementById('locationSelect')?.closest('.section');
 const locationSelect = document.getElementById('locationSelect');
+const replaceLocationSelect = document.getElementById('replaceLocationSelect');
 const newLocationName = document.getElementById('newLocationName');
 
 const addressSection = document.getElementById('addressSection');
 const buildingDetailsSection = document.getElementById('buildingDetailsSection');
 
+const otherExplain = document.getElementById('otherExplain');
+
 const addInsRadios = document.querySelectorAll('input[name="addIns"]');
 const addInsInfoSection = document.getElementById("addInsInfoSection");
 const addInsFileSection = document.getElementById("addInsFileSection");
-
-const otherExplain = document.getElementById('otherExplain');
-
-const previewBtn = document.getElementById('previewBtn');
-const previewModal = document.getElementById('previewModal');
-const closePreview = document.getElementById('closePreview');
-const previewBody = document.getElementById('previewBody');
-const editBtn = document.getElementById('editBtn');
-const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
-
-const statusMsg = document.getElementById('statusMsg');
-const form = document.getElementById('locForm');
-
-const replaceLocationSelect = document.getElementById('replaceLocationSelect');
 const insInfo = document.getElementById("insInfo");
 const insInfoRequiredStar = document.getElementById("insInfoRequiredStar");
+const fileUpload = document.getElementById("fileUpload");
 
 const contentsCoverageRadios = document.querySelectorAll('input[name="contentsCoverage"]');
 const contentsValue = document.getElementById('contentsValue');
 
+/* Preview */
+const previewBtn = document.getElementById('previewBtn');
+const previewModal = document.getElementById('previewModal');
+const previewBody = document.getElementById('previewBody');
+const closePreview = document.getElementById('closePreview');
+const editBtn = document.getElementById('editBtn');
+const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
+
+
 /* -------------------------------------------
-   UTILITY
+   UTILITIES (STRICT)
 -------------------------------------------- */
-function escapeHtml(str) {
-  return str.replace(/[&<>'"]/g, t =>
+function escapeHtml(str = "") {
+  return String(str).replace(/[&<>'"]/g, t =>
     ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "'":"&#39;", '"':"&quot;" }[t])
   );
 }
 
-function show(el) { el.classList.remove('hidden'); }
-function hide(el) { el.classList.add('hidden'); }
+function hardHideInput(input){
+  if(!input) return;
+  input.classList.add('hidden');
+  input.disabled = true;
+  input.required = false;
+  input.value = "";
+}
 
+function hardShowInput(input){
+  if(!input) return;
+  input.classList.remove('hidden');
+  input.disabled = false;
+}
 
-/* helper: enable/disable all form controls inside a container */
-function setControlsActive(container, active = true) {
-  if (!container) return;
-  const controls = container.querySelectorAll('input, textarea, select, button');
-  controls.forEach(c => {
-    if (active) {
-      c.disabled = false;
-      c.removeAttribute('aria-hidden');
-    } else {
-      c.disabled = true;
-      c.removeAttribute('required'); // remove required to prevent validation errors
-      c.setAttribute('aria-hidden', 'true');
-    }
+function hardHideSection(section){
+  if(!section) return;
+  section.classList.add('hidden');
+  section.querySelectorAll('input, textarea, select').forEach(el=>{
+    el.disabled = true;
+    el.required = false;
   });
 }
 
-/* updated handler for update type (Q7) */
-function handleUpdateTypeChange() {
-  const val = document.querySelector('input[name="updateType"]:checked')?.value || "";
-  
-  /* Hide dropdown by default */
-  hide(replaceLocationSelect);
-  replaceLocationSelect.required = false;
+function hardShowSection(section){
+  if(!section) return;
+  section.classList.remove('hidden');
+  section.querySelectorAll('input, textarea, select').forEach(el=>{
+    el.disabled = false;
+  });
+}
+
+function filesToBase64(fileInput){
+  const files = Array.from(fileInput?.files || []);
+  return Promise.all(
+    files.map(file =>
+      new Promise((resolve, reject)=>{
+        const reader = new FileReader();
+        reader.onload = ()=> resolve({
+          name: file.name,
+          content: reader.result.split(',')[1]
+        });
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      })
+    )
+  );
+}
+
+function setSubmitting(isSubmitting){
+  if(!submitBtn) return;
+  submitBtn.disabled = isSubmitting;
+  submitBtn.textContent = isSubmitting ? "Submitting…" : "Submit";
+  submitBtn.style.opacity = isSubmitting ? "0.7" : "1";
+  submitBtn.style.cursor = isSubmitting ? "not-allowed" : "pointer";
+}
+
+function scrollToStatus(){
+  statusMsg?.scrollIntoView({ behavior:"smooth", block:"center" });
+}
+
+
+/* -------------------------------------------
+   RESETTERS (CRITICAL)
+-------------------------------------------- */
+function resetNewLocationName(){
+  hardHideInput(newLocationName);
+}
+
+function resetConditional(){
+  hardHideInput(newLocationName);
+  hardHideInput(otherExplain);
+  hardHideInput(contentsValue);
+
+  hardHideSection(addInsInfoSection);
+  hardHideSection(addInsFileSection);
+
+  hardHideSection(addressSection);
+  hardHideSection(buildingDetailsSection);
+
+  replaceLocationSelect.classList.add('hidden');
   replaceLocationSelect.disabled = true;
+  replaceLocationSelect.required = false;
 
-  /* REPLACE LOCATION logic */
-  if (val === "replace") {
-    show(locationSection);
-    locationSelect.required = true;
-    locationSelect.disabled = false;
+  locationSelect.disabled = false;
+  locationSelect.required = true;
+}
 
-    show(replaceLocationSelect);
-    replaceLocationSelect.required = true;
+
+/* -------------------------------------------
+   UPDATE TYPE LOGIC (FINAL FIX)
+-------------------------------------------- */
+function handleUpdateTypeChange(){
+  const val = document.querySelector('input[name="updateType"]:checked')?.value || "";
+
+  // 🔥 ALWAYS RESET FIRST
+  resetConditional();
+
+  // ===== REPLACE =====
+  if(val === "replace"){
+    hardShowSection(locationSection);
+    replaceLocationSelect.classList.remove('hidden');
     replaceLocationSelect.disabled = false;
-
-    hide(newLocationName);
-    newLocationName.required = false;
-    newLocationName.disabled = true;
-
-    setControlsActive(addressSection, false);
-    setControlsActive(buildingDetailsSection, false);
+    replaceLocationSelect.required = true;
     return;
   }
 
-  /* -------------------------------------------
-   LOGIC — Contents Coverage (NEW QUESTION)
--------------------------------------------- */
-contentsCoverageRadios.forEach(r => {
-  r.addEventListener("change", () => {
-    const val = document.querySelector('input[name="contentsCoverage"]:checked')?.value;
-
-    if (val === "yes") {
-      contentsValue.classList.remove("hidden");
-      contentsValue.required = true;
-      contentsValue.disabled = false;
-    } else {
-      contentsValue.classList.add("hidden");
-      contentsValue.required = false;
-      contentsValue.disabled = true;
-      contentsValue.value = "";
-    }
-  });
-});
-
-  // otherExplain visibility (Other)
-  if (val === "other") {
-    show(otherExplain);
-    otherExplain.disabled = false;
-  } else {
-    hide(otherExplain);
-    otherExplain.disabled = true;
-    otherExplain.removeAttribute('required');
+  // ===== OTHER =====
+  if(val === "other"){
+    hardShowInput(otherExplain);
+    return;
   }
 
-  // If add new location
-  if (val === "add") {
-    // hide existing location selector and make it non-required/disabled
-    try {
-      hide(locationSection);
-    } catch(e){ /* ignore */ }
-    locationSelect.required = false;
+  // ===== ADD =====
+  if(val === "add"){
+    // disable location select
+    hardHideSection(locationSection);
     locationSelect.disabled = true;
+    locationSelect.required = false;
 
-    // show newLocationName, enable and require it
-    show(newLocationName);
-    newLocationName.disabled = false;
+    // ONLY PLACE newLocationName is enabled + required
+    hardShowInput(newLocationName);
     newLocationName.required = true;
 
-    // address fields required + enabled
-    setControlsActive(addressSection, true);
-    addressSection.querySelectorAll('input').forEach(i => { i.required = true; i.disabled = false; });
+    // address required
+    hardShowSection(addressSection);
+    addressSection.querySelectorAll('input').forEach(i => i.required = true);
 
-    // building details required + enabled
-    setControlsActive(buildingDetailsSection, true);
+    // building required
+    hardShowSection(buildingDetailsSection);
     const ta = buildingDetailsSection.querySelector('textarea');
-    if (ta) { ta.required = true; ta.disabled = false; }
+    if(ta) ta.required = true;
 
-  } else {
-    // restore normal mode: show location select, enable it
-    try {
-      show(locationSection);
-    } catch(e){ /* ignore */ }
-    locationSelect.required = true;
-    locationSelect.disabled = false;
-
-    // hide and disable newLocationName
-    hide(newLocationName);
-    newLocationName.required = false;
-    newLocationName.disabled = true;
-
-    // address fields not required and disabled (so browser won't validate hidden ones)
-    setControlsActive(addressSection, false);
-    // building details disabled too
-    setControlsActive(buildingDetailsSection, false);
+    return;
   }
+
+  // ===== DEFAULT (correct, sqft, remove) =====
+  hardShowSection(locationSection);
 }
 
-/* Ensure initial state on load */
-document.addEventListener('DOMContentLoaded', () => {
-  // disable elements that should start disabled
-  if (newLocationName) { newLocationName.disabled = true; }
-  setControlsActive(addressSection, false);
-  setControlsActive(buildingDetailsSection, false);
-  if (otherExplain) { otherExplain.disabled = true; }
 
-  // attach listeners if not already attached
-  updateTypeRadios.forEach(r => r.removeEventListener('change', handleUpdateTypeChange));
-  updateTypeRadios.forEach(r => r.addEventListener('change', handleUpdateTypeChange));
-
-  // run once to set correct initial visibility based on any preselected radio
-  handleUpdateTypeChange();
+/* -------------------------------------------
+   CONTENTS COVERAGE
+-------------------------------------------- */
+contentsCoverageRadios.forEach(r=>{
+  r.addEventListener("change", ()=>{
+    const val = document.querySelector('input[name="contentsCoverage"]:checked')?.value;
+    if(val === "yes"){
+      hardShowInput(contentsValue);
+      contentsValue.required = true;
+    } else {
+      hardHideInput(contentsValue);
+    }
+  });
 });
 
 
 /* -------------------------------------------
-   LOGIC — Additional Insured
+   ADDITIONAL INSURED
 -------------------------------------------- */
-addInsRadios.forEach(r => {
-  r.addEventListener('change', () => {
+addInsRadios.forEach(r=>{
+  r.addEventListener('change', ()=>{
     const val = document.querySelector('input[name="addIns"]:checked')?.value;
-    if (val === "yes") {
-      show(addInsInfoSection);
-      show(addInsFileSection);
-
-      // MAKE FIELD REQUIRED
+    if(val === "yes"){
+      hardShowSection(addInsInfoSection);
+      hardShowSection(addInsFileSection);
       insInfo.required = true;
-      insInfo.setAttribute("aria-required", "true");
-
-      // SHOW REQUIRED STAR
-      insInfoRequiredStar.classList.remove("hidden");
-
+      insInfoRequiredStar?.classList.remove("hidden");
     } else {
-      hide(addInsInfoSection);
-      hide(addInsFileSection);
-
-      // REMOVE REQUIRED STATE
-      insInfo.required = false;
-      insInfo.removeAttribute("aria-required");
-      insInfo.value = ""; // optional: clear field
-
-      // HIDE REQUIRED STAR
-      insInfoRequiredStar.classList.add("hidden");
+      hardHideSection(addInsInfoSection);
+      hardHideSection(addInsFileSection);
+      insInfoRequiredStar?.classList.add("hidden");
     }
   });
 });
@@ -221,15 +230,17 @@ addInsRadios.forEach(r => {
 /* -------------------------------------------
    BUILD PAYLOAD
 -------------------------------------------- */
-/************************************
- * PREVIEW PAYLOAD
- ************************************/
-function buildPayload() {
+async function buildPayload(){
+  let insuredFiles = [];
+  if(fileUpload?.files?.length){
+    insuredFiles = await filesToBase64(fileUpload);
+  }
+
   return {
     organizationName: orgName.value,
     yourName: yourName.value,
 
-    updateType: document.querySelector("input[name='updateType']:checked")?.value || "",
+    updateType: document.querySelector('input[name="updateType"]:checked')?.value || "",
     otherExplain: otherExplain.value,
 
     locationSelect: locationSelect.value,
@@ -243,17 +254,17 @@ function buildPayload() {
     },
 
     buildingDetails: buildingDetails.value,
-
     changeDate: changeDate.value,
 
-    additionalInsured: document.querySelector("input[name='addIns']:checked")?.value,
+    additionalInsured: document.querySelector('input[name="addIns"]:checked')?.value || "",
     insuredInfo: insInfo.value,
-    insuredContractFile: fileUpload.value,
+    insuredContractFiles: insuredFiles,
 
     notes: notes.value,
-
     confirmed: agree.checked,
-    signature: fullName.value
+    signature: fullName.value,
+
+    submittedAt: new Date().toISOString()
   };
 }
 
@@ -261,138 +272,117 @@ function buildPayload() {
 /* -------------------------------------------
    VALIDATION
 -------------------------------------------- */
-function validateForm() {
-  // Native browser validation first
-  if (!form.checkValidity()) {
+function validateForm(){
+  if(!form.checkValidity()){
     form.reportValidity();
     return false;
   }
-
-  // Custom rules if needed (none extra now)
   return true;
 }
 
 
-/************************************
- * PREVIEW MODAL (CLEAN VERSION)
- ************************************/
-
-function addPreviewRow(rows, label, value, options = {}) {
-  const { showIfEmpty = false } = options;
-
-  // hide if empty and not required to show
-  if (!showIfEmpty && (!value || value.trim() === "")) {
-    return; // SKIP → do not add the preview row
-  }
-
-  const safe = value && value.trim() !== ""
-    ? escapeHtml(String(value))
-    : '<span style="color:#9aa5b1;font-style:italic;">(not provided)</span>';
-
+/* -------------------------------------------
+   PREVIEW
+-------------------------------------------- */
+function addPreviewRow(rows,label,value){
+  if(!value || !value.trim()) return;
   rows.push(`
     <div class="preview-row">
       <div class="preview-label">${escapeHtml(label)}</div>
-      <div class="preview-value">${safe}</div>
+      <div class="preview-value">${escapeHtml(value)}</div>
     </div>
   `);
 }
 
-function showPreviewModal(payload) {
+function showPreviewModal(payload){
   const rows = [];
 
-  addPreviewRow(rows, "Organization Name", payload.organizationName);
-  addPreviewRow(rows, "Your Name", payload.yourName);
+  addPreviewRow(rows,"Organization Name",payload.organizationName);
+  addPreviewRow(rows,"Your Name",payload.yourName);
+  addPreviewRow(rows,"Type of Change",payload.updateType);
+  addPreviewRow(rows,"Location",payload.locationSelect);
+  addPreviewRow(rows,"New Location Name",payload.newLocationName);
 
-  addPreviewRow(rows, "Type of Change", payload.updateType);
-  if (payload.updateType === "other") addPreviewRow(rows, "Explanation", payload.otherExplain);
+  addPreviewRow(rows,"Street",payload.address.street);
+  addPreviewRow(rows,"City",payload.address.city);
+  addPreviewRow(rows,"State",payload.address.state);
+  addPreviewRow(rows,"ZIP",payload.address.zip);
 
-  if (payload.updateType !== "add") {
-    addPreviewRow(rows, "Location Being Updated", payload.locationSelect);
-  }
-
-  addPreviewRow(rows, "New Location Name", payload.newLocationName);
-
-  rows.push(`<h4 class="preview-section-title">Updated / Corrected Address</h4>`);
-  addPreviewRow(rows, "Street", payload.address.street);
-  addPreviewRow(rows, "City", payload.address.city);
-  addPreviewRow(rows, "State", payload.address.state);
-  addPreviewRow(rows, "ZIP", payload.address.zip);
-
-  addPreviewRow(rows, "Building Details", payload.buildingDetails);
-  addPreviewRow(rows, "Effective Date", payload.changeDate);
-
-  addPreviewRow(rows, "Additional Insured?", payload.additionalInsured);
-  if (payload.additionalInsured === "yes") {
-    addPreviewRow(rows, "Insured Info", payload.insuredInfo);
-    addPreviewRow(rows, "Uploaded Contract", payload.insuredContractFile);
-  }
-
-  addPreviewRow(rows, "Additional Notes", payload.notes);
-
-  addPreviewRow(rows, "Confirmed", payload.confirmed ? "Yes" : "No");
-  addPreviewRow(rows, "Signature", payload.signature);
+  addPreviewRow(rows,"Building Details",payload.buildingDetails);
+  addPreviewRow(rows,"Effective Date",payload.changeDate);
+  addPreviewRow(rows,"Additional Insured",payload.additionalInsured);
+  addPreviewRow(rows,"Insured Info",payload.insuredInfo);
+  addPreviewRow(rows,"Notes",payload.notes);
+  addPreviewRow(rows,"Signature",payload.signature);
 
   previewBody.innerHTML = rows.join("");
-
   previewModal.classList.remove("hidden");
-  previewModal.setAttribute("aria-hidden", "false");
-  closePreview.focus();
 }
 
-function disableHiddenRequiredFields() {
-  const all = document.querySelectorAll('[required]');
-  all.forEach(el => {
-    const isHidden = el.offsetParent === null; // element hidden
-    if (isHidden) {
-      el.disabled = true;
-      el.removeAttribute('required');
-    }
-  });
-}
 
-/* OVERRIDE OLD PREVIEW BUTTON HANDLER */
-previewBtn.addEventListener("click", () => {
-  disableHiddenRequiredFields();
+/* -------------------------------------------
+   EVENTS
+-------------------------------------------- */
+updateTypeRadios.forEach(r=>{
+  r.addEventListener('change', handleUpdateTypeChange);
+});
 
-  if (!validateForm()) return;
-  const payload = buildPayload();
+previewBtn.addEventListener("click", async ()=>{
+  if(!validateForm()) return;
+  const payload = await buildPayload();
   showPreviewModal(payload);
 });
 
-closePreview.addEventListener("click", () => {
-  previewModal.classList.add("hidden");
-});
+closePreview.addEventListener("click", ()=> previewModal.classList.add('hidden'));
+editBtn.addEventListener("click", ()=> previewModal.classList.add('hidden'));
 
-editBtn.addEventListener("click", () => {
-  previewModal.classList.add("hidden");
-});
-
-/************************************
- * CONFIRM SUBMIT FROM PREVIEW
- ************************************/
-confirmSubmitBtn.addEventListener("click", () => {
-  previewModal.classList.add("hidden");
-
-  form.dispatchEvent(new Event("submit"));
+confirmSubmitBtn.addEventListener("click", ()=>{
+  previewModal.classList.add('hidden');
+  form.requestSubmit();
 });
 
 
 /* -------------------------------------------
-   SUBMIT HANDLER (Demo Mode)
+   SUBMIT
 -------------------------------------------- */
-locForm.addEventListener("submit", (ev) => {
+form.addEventListener("submit", async (ev)=>{
   ev.preventDefault();
-  if (!validateForm()) return;
+  if(!validateForm()) return;
 
-  const payload = buildPayload();
+  setSubmitting(true);
+  statusMsg.innerHTML = `<strong>Submitting your request…</strong><br/>Please wait and do not close this page.`;
+  statusMsg.classList.remove('hidden');
+  scrollToStatus();
 
-  statusMsg.innerHTML = `
-    <strong>No endpoint configured.</strong>
-    <pre style="white-space:pre-wrap;">${escapeHtml(JSON.stringify(payload,null,2))}</pre>
-  `;
-  statusMsg.classList.remove("hidden");
-  statusMsg.setAttribute("aria-hidden", "false");
-  window.scrollTo({ top: statusMsg.offsetTop - 20, behavior: "smooth" });
+  try {
+    const payload = await buildPayload();
+
+    const res = await fetch(endpointURL,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if(!res.ok) throw new Error("Server error");
+
+    statusMsg.innerHTML = `<strong>Submitted successfully.</strong>`;
+    form.reset();
+    resetConditional();
+    handleUpdateTypeChange();
+
+  } catch(err){
+    statusMsg.innerHTML = `<strong>Submission failed:</strong> ${escapeHtml(err.message)}`;
+  } finally {
+    setSubmitting(false);
+    scrollToStatus();
+  }
+});
 
 
+/* -------------------------------------------
+   INIT (CRITICAL)
+-------------------------------------------- */
+document.addEventListener("DOMContentLoaded", ()=>{
+  resetConditional();
+  handleUpdateTypeChange();
 });
